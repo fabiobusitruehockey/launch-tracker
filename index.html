@@ -445,6 +445,7 @@ const uid = () => 'u'+(++_uid);
 let view = {type:'home'};
 let _saveTimeout = null;
 let _listening = false;
+let _isSaving = false;
 
 function freshDay(name) {
   return {
@@ -539,12 +540,9 @@ function startListening() {
   if (_listening) return;
   _listening = true;
   STATE_REF.on('value', (snapshot) => {
-    // Ignore echo from our own writes
-    if (_isSaving) return;
-
     const remote = snapshot.val();
     if (!remote || !remote.launchDays || !remote.launchDays.length) {
-      STATE_REF.set(JSON.parse(JSON.stringify(G)));
+      // Data missing — don't write from listener (initial load handles seeding)
       return;
     }
 
@@ -574,6 +572,15 @@ function startListening() {
       }
     } else {
       render();
+    }
+  }, (err) => {
+    // Listener error — usually means rules expired
+    const msg = String(err);
+    if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
+      setConnUI(false, 'Rules expired');
+      showRulesModal();
+    } else {
+      setConnUI(false, 'Offline');
     }
   });
 }
@@ -1250,8 +1257,8 @@ function applyRemoteState(remote) {
   const localActiveId = G.activeId;
   G = remote;
   if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-  if (!G.launchDays.find(d => d.id === G.activeId)) G.activeId = G.launchDays[0].id;
-  else G.activeId = localActiveId;
+  // Keep the user on their current day if it still exists, otherwise use first day
+  G.activeId = (G.launchDays.find(d => d.id === localActiveId)) ? localActiveId : G.launchDays[0].id;
   return true;
 }
 
@@ -1286,16 +1293,23 @@ STATE_REF.once('value').then((snap) => {
     }
   }
   render();
-  startListening();
+  // Start listening AFTER initial render so first listener fire doesn't double-render
+  setTimeout(startListening, 50);
 }).catch((err) => {
   console.error('Firebase load error:', err);
-  // Firebase unreachable — try local backup, then fall back to defaults
-  if (!loadFromLocalBackup()) {
-    toast('Could not connect to Firebase — working offline');
+  const msg = String(err);
+  if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
+    showRulesModal();
+    setConnUI(false, 'Rules expired');
+  } else {
+    // Firebase unreachable — try local backup, then show offline
+    if (!loadFromLocalBackup()) {
+      toast('Could not connect to Firebase — working offline');
+    }
+    setConnUI(false, 'Offline');
   }
-  setConnUI(false, 'Offline');
   render();
-  startListening(); // keep trying
+  setTimeout(startListening, 50);
 });
 </script>
 </body>
