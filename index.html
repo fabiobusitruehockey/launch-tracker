@@ -3,760 +3,809 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TRUE Hockey — Launch Asset Tracker</title>
+<title>TRUE Launch Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --blue:#00A3E0; --black:#000; --bsoft:#0A0A0A; --bmid:#111;
-  --bcard:#161616; --bborder:#222; --bhover:#1E1E1E;
-  --gdark:#666; --gmid:#AAA; --glight:#CCC; --white:#FFF;
+:root{
+  --blue:#00A3E0;--black:#000;--b1:#0A0A0A;--b2:#111;--b3:#161616;
+  --border:#222;--hover:#1C1C1C;--g1:#606060;--g2:#909090;--g3:#C0C0C0;--white:#FFF;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);min-height:100vh;font-size:14px}
-
-/* ── HEADER ── */
-.hdr{background:var(--black);border-bottom:1px solid var(--bborder);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:300}
+.hdr{background:var(--black);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:300}
 .hdr-l{display:flex;align-items:center;gap:16px}
 .logo{height:20px;display:block}
-.hdiv{width:1px;height:22px;background:var(--bborder)}
-.hdr-title{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gmid)}
-
-/* ── LAUNCH DAY DROPDOWN ── */
-.ld-wrap{display:flex;align-items:center;gap:8px;position:relative}
-.ld-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gdark);white-space:nowrap}
-.ld-select{background:var(--bcard);border:1px solid var(--bborder);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;padding:6px 32px 6px 12px;border-radius:4px;outline:none;cursor:pointer;transition:border-color .15s;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-.ld-select:hover,.ld-select:focus{border-color:var(--blue)}
-.ld-select option{background:#161616;color:white}
-.ld-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue);background:rgba(0,163,224,.1);padding:3px 8px;border-radius:2px;white-space:nowrap}
-.ld-add-btn{background:none;border:1px solid var(--bborder);color:var(--gmid);font-family:'DM Mono',monospace;font-size:10px;padding:5px 10px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.ld-add-btn:hover{border-color:var(--blue);color:var(--blue)}
-.ld-edit-btn{background:none;border:none;cursor:pointer;color:var(--gdark);font-size:13px;padding:4px;transition:color .15s}
-.ld-edit-btn:hover{color:var(--blue)}
-
-/* ── LAYOUT ── */
-.layout{display:grid;grid-template-columns:248px 1fr;min-height:calc(100vh - 52px)}
-
-/* ── SIDEBAR ── */
-.sidebar{background:var(--bsoft);border-right:1px solid var(--bborder);padding:18px 0;overflow-y:auto;position:sticky;top:52px;height:calc(100vh - 52px)}
-.sb-lbl{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gdark);padding:0 16px 7px}
-.tier-nav{display:flex;flex-direction:column}
-.tier-btn{background:none;border:none;cursor:pointer;padding:8px 16px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:background .12s;border-left:2px solid transparent;width:100%}
-.tier-btn:hover{background:var(--bhover)}
-.tier-btn.active{background:rgba(0,163,224,.08);border-left-color:var(--blue)}
-.tier-inner{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
-.tier-dot{width:6px;height:6px;border-radius:50%;background:var(--gdark);flex-shrink:0}
-.tier-btn.active .tier-dot{background:var(--blue)}
-.tier-name{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.06em;color:var(--glight);text-transform:uppercase;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tier-btn.active .tier-name{color:var(--white)}
-.tier-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--gdark);background:var(--bcard);padding:2px 5px;border-radius:2px;flex-shrink:0}
-.tier-btn.active .tier-pct{color:var(--blue)}
-.tedit{background:none;border:none;cursor:pointer;font-size:11px;color:var(--gdark);padding:2px 3px;opacity:0;transition:opacity .12s;flex-shrink:0}
-.tier-btn:hover .tedit{opacity:1}
-.tedit:hover{color:var(--blue)}
-
-.prod-list{display:none;flex-direction:column}
-.prod-list.open{display:flex}
-.prod-btn{background:none;border:none;cursor:pointer;padding:6px 16px 6px 33px;font-family:'Barlow',sans-serif;font-size:12px;color:var(--gmid);transition:all .12s;display:flex;align-items:center;justify-content:space-between;border-left:2px solid transparent;width:100%;gap:8px}
-.prod-btn:hover{background:var(--bhover);color:var(--glight)}
-.prod-btn.active{background:rgba(0,163,224,.05);color:var(--white);border-left-color:var(--blue)}
-.pname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
-.pright{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.pmbar{height:2px;width:26px;background:var(--bcard);border-radius:2px;overflow:hidden}
-.pmfill{height:100%;background:var(--blue);border-radius:2px}
-.pedit{background:none;border:none;cursor:pointer;font-size:11px;color:var(--gdark);padding:1px 3px;opacity:0;transition:opacity .12s}
-.prod-btn:hover .pedit{opacity:1}
-.pedit:hover{color:var(--blue)}
-
-.sb-sep{height:1px;background:var(--bborder);margin:12px 16px}
+.hdiv{width:1px;height:22px;background:var(--border)}
+.app-title{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--g2)}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.ld-sel-wrap{display:none;align-items:center;gap:8px}
+.ld-sel-wrap.show{display:flex}
+.ld-sel-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--g1);white-space:nowrap}
+.ld-sel{background:var(--b3);border:1px solid var(--border);color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;padding:5px 30px 5px 10px;border-radius:4px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .15s}
+.ld-sel:hover,.ld-sel:focus{border-color:var(--blue)}
+.sync-pill{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--g2);padding:4px 10px;border:1px solid var(--border);border-radius:3px;white-space:nowrap}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--g1);flex-shrink:0;transition:background .3s}
+.sdot.ok{background:#4ade80}
+.sdot.busy{background:var(--blue);animation:blink .8s infinite}
+.sdot.err{background:#f87171}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.layout{display:grid;grid-template-columns:252px 1fr;min-height:calc(100vh - 52px)}
+.sidebar{background:var(--b1);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;position:sticky;top:52px;height:calc(100vh - 52px)}
+.sblbl{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--g1);padding:0 16px 6px}
+.nb{background:none;border:none;cursor:pointer;padding:8px 16px;text-align:left;display:flex;align-items:center;gap:8px;transition:background .12s;border-left:2px solid transparent;width:100%}
+.nb:hover{background:var(--hover)}
+.nb.on{background:rgba(0,163,224,.08);border-left-color:var(--blue)}
+.nbi{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.nbdot{width:6px;height:6px;border-radius:50%;background:var(--g1);flex-shrink:0}
+.nb.on .nbdot{background:var(--blue)}
+.nblbl{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.06em;color:var(--g3);text-transform:uppercase;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nb.on .nblbl{color:var(--white)}
+.nbpct{font-family:'DM Mono',monospace;font-size:10px;color:var(--g1);background:var(--b3);padding:2px 5px;border-radius:2px;flex-shrink:0}
+.nb.on .nbpct{color:var(--blue)}
+.nbedit{background:none;border:none;cursor:pointer;font-size:11px;color:var(--g1);padding:2px 4px;opacity:0;transition:opacity .12s;flex-shrink:0;line-height:1}
+.nb:hover .nbedit{opacity:1}
+.nbedit:hover{color:var(--blue)}
+.plist{display:none;flex-direction:column}
+.plist.open{display:flex}
+.pb{background:none;border:none;cursor:pointer;padding:6px 16px 6px 33px;font-family:'Barlow',sans-serif;font-size:12px;color:var(--g2);transition:all .12s;display:flex;align-items:center;border-left:2px solid transparent;width:100%;gap:8px}
+.pb:hover{background:var(--hover);color:var(--g3)}
+.pb.on{background:rgba(0,163,224,.05);color:var(--white);border-left-color:var(--blue)}
+.pbn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.pbbar{height:2px;width:26px;background:var(--b3);border-radius:2px;overflow:hidden;flex-shrink:0}
+.pbfill{height:100%;background:var(--blue)}
+.pbedit{background:none;border:none;cursor:pointer;font-size:11px;color:var(--g1);padding:1px 3px;opacity:0;transition:opacity .12s;flex-shrink:0}
+.pb:hover .pbedit{opacity:1}
+.pbedit:hover{color:var(--blue)}
+.sbsep{height:1px;background:var(--border);margin:10px 16px}
 .apf{padding:0 16px 8px}
-.apf select,.apf input{width:100%;background:var(--bcard);border:1px solid var(--bborder);color:var(--white);font-family:'Barlow',sans-serif;font-size:12px;padding:7px 9px;border-radius:3px;margin-bottom:5px;outline:none;transition:border-color .12s}
+.apf select,.apf input{width:100%;background:var(--b3);border:1px solid var(--border);color:var(--white);font-family:'Barlow',sans-serif;font-size:12px;padding:7px 9px;border-radius:3px;margin-bottom:5px;outline:none;transition:border-color .12s}
 .apf select:focus,.apf input:focus{border-color:var(--blue)}
-.apf input::placeholder{color:var(--gdark)}
-.apf-btn{width:100%;background:var(--blue);border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:7px;border-radius:3px;cursor:pointer;transition:opacity .12s}
-.apf-btn:hover{opacity:.85}
-.mgr-btn{background:none;border:none;cursor:pointer;width:100%;padding:6px 16px;text-align:left;font-family:'DM Mono',monospace;font-size:10px;color:var(--gdark);letter-spacing:.08em;display:flex;align-items:center;gap:6px;transition:color .12s}
-.mgr-btn:hover{color:var(--blue)}
-
-/* ── MAIN ── */
-.main{background:var(--bsoft);overflow-y:auto}
-
-/* ── CONTENT HEADER ── */
-.ch{background:var(--black);border-bottom:1px solid var(--bborder);padding:18px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-.ch-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
+.apf input::placeholder{color:var(--g1)}
+.apfbtn{width:100%;background:var(--blue);border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:7px;border-radius:3px;cursor:pointer;transition:opacity .12s}
+.apfbtn:hover{opacity:.85}
+.mgrlnk{background:none;border:none;cursor:pointer;width:100%;padding:6px 16px;text-align:left;font-family:'DM Mono',monospace;font-size:10px;color:var(--g1);letter-spacing:.08em;display:flex;align-items:center;gap:6px;transition:color .12s}
+.mgrlnk:hover{color:var(--blue)}
+.main{background:var(--b1);overflow-y:auto;display:flex;flex-direction:column}
+.ch{background:var(--black);border-bottom:1px solid var(--border);padding:18px 28px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-shrink:0}
+.ch-eye{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:4px}
 .ch-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;color:var(--white)}
-.sbar{display:flex;align-items:center;gap:20px;flex-shrink:0}
-.stat-b{text-align:center}
-.stat-n{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--white);line-height:1}
-.stat-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gdark);margin-top:3px}
-.stat-d{width:1px;height:34px;background:var(--bborder)}
-.ring-w{position:relative;width:60px;height:60px}
-.ring-w svg{transform:rotate(-90deg)}
-.r-bg{fill:none;stroke:var(--bborder);stroke-width:5}
-.r-fill{fill:none;stroke:var(--blue);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .5s}
-.r-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--white)}
-
-/* ── CHECKLIST ── */
-.ca{padding:20px 28px}
-.cat-block{margin-bottom:10px;border-radius:4px;overflow:hidden}
-.cat-hdr{display:flex;align-items:center;background:var(--bcard);border:1px solid var(--bborder);border-radius:4px 4px 0 0;padding:0 0 0 12px;min-height:40px}
-.cat-block.collapsed .cat-hdr{border-radius:4px}
-.cat-tog{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;flex:1;padding:9px 0;min-width:0}
-.cat-ico{font-size:13px;width:17px;text-align:center;flex-shrink:0}
-.cat-ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--glight);flex:1;text-align:left}
-.cat-prg{font-family:'DM Mono',monospace;font-size:10px;color:var(--gdark);padding-right:4px;flex-shrink:0}
-.cat-chv{font-size:9px;color:var(--gdark);transition:transform .2s;flex-shrink:0;margin-right:2px}
-.cat-block.collapsed .cat-chv{transform:rotate(-90deg)}
-.cat-acts{display:flex;gap:2px;padding:0 8px 0 4px;flex-shrink:0}
-.cact{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:3px;font-size:12px;color:var(--gdark);opacity:.4;transition:all .12s}
+.sbar{display:flex;align-items:center;gap:18px;flex-shrink:0}
+.stb{text-align:center}
+.stn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--white);line-height:1}
+.stl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--g1);margin-top:3px}
+.stsp{width:1px;height:34px;background:var(--border)}
+.rw{position:relative;width:60px;height:60px}
+.rw svg{display:block}
+.rl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.rpct{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--white);line-height:1}
+.rsub{font-family:'DM Mono',monospace;font-size:8px;color:var(--g1);margin-top:1px}
+.ca{padding:20px 28px;flex:1}
+.catblock{margin-bottom:10px;border-radius:4px;overflow:hidden}
+.cathdr{display:flex;align-items:center;background:var(--b3);border:1px solid var(--border);border-radius:4px 4px 0 0;padding:0 0 0 12px;min-height:40px}
+.catblock.collapsed .cathdr{border-radius:4px}
+.cattog{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;flex:1;padding:9px 0;min-width:0}
+.catic{font-size:13px;width:18px;text-align:center;flex-shrink:0}
+.cattl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--g3);flex:1;text-align:left}
+.catprg{font-family:'DM Mono',monospace;font-size:10px;color:var(--g1);padding-right:4px;flex-shrink:0}
+.catchv{font-size:9px;color:var(--g1);transition:transform .2s;flex-shrink:0;margin-right:2px}
+.catblock.collapsed .catchv{transform:rotate(-90deg)}
+.catacts{display:flex;gap:2px;padding:0 8px 0 4px;flex-shrink:0}
+.cact{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:3px;font-size:12px;color:var(--g1);opacity:.4;transition:all .12s}
 .cact:hover{background:rgba(255,255,255,.06);opacity:1;color:var(--white)}
 .cact.del:hover{background:rgba(239,68,68,.15);color:#f87171}
-
-.itbl{background:var(--bcard);border:1px solid var(--bborder);border-top:none}
-.cat-block.collapsed .itbl{display:none}
-.irow{display:grid;grid-template-columns:1fr 165px 118px 100px 100px 150px 38px;align-items:stretch;border-bottom:1px solid var(--bborder)}
+.itbl{background:var(--b3);border:1px solid var(--border);border-top:none}
+.catblock.collapsed .itbl{display:none}
+.irow{display:grid;grid-template-columns:1fr 165px 120px 100px 100px 150px 36px;align-items:stretch;border-bottom:1px solid var(--border)}
 .irow:last-child{border-bottom:none}
-.irow:not(.hrow):hover{background:var(--bhover)}
-.irow:not(.hrow):hover .dbtn{opacity:1}
-.icol{padding:7px 11px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gdark);background:var(--bmid);border-bottom:1px solid var(--bborder);display:flex;align-items:center}
-.fcell input{border:none;background:transparent;font-family:'Barlow',sans-serif;padding:9px 11px;width:100%;outline:none;height:100%;color:var(--white);transition:background .12s}
-.fcell input:focus{background:rgba(0,163,224,.05)}
-.fcell input::placeholder{color:var(--gdark);font-style:italic}
-.fname input{font-size:13px;font-weight:500}
-.fnotes input{font-size:11px;color:var(--gmid)}
+.irow:not(.hrow):hover{background:var(--hover)}
+.irow:not(.hrow):hover .delbtn{opacity:1}
+.icol{padding:7px 11px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);background:var(--b2);border-bottom:1px solid var(--border);display:flex;align-items:center}
+.fc input{border:none;background:transparent;font-family:'Barlow',sans-serif;padding:9px 11px;width:100%;outline:none;height:100%;color:var(--white);transition:background .12s}
+.fc input:focus{background:rgba(0,163,224,.05)}
+.fc input::placeholder{color:var(--g1);font-style:italic}
+.fcname input{font-size:13px;font-weight:500}
+.fcnotes input,.fccmt input{font-size:11px;color:var(--g2)}
+.fccmt input:not(:placeholder-shown){color:var(--g3)}
 .ss{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;padding:5px 9px;border-radius:20px;cursor:pointer;outline:none;margin:7px 9px;text-transform:uppercase;width:calc(100% - 18px)}
 .ss.complete{background:rgba(34,197,94,.12);color:#4ade80}
 .ss.in-progress{background:rgba(0,163,224,.15);color:var(--blue)}
 .ss.not-started{background:rgba(160,174,192,.12);color:#A0AEC0}
 .ss.na{background:rgba(102,102,102,.18);color:#999}
 .ss.custom{background:rgba(168,85,247,.12);color:#c084fc}
-.dbtn{background:none;border:none;cursor:pointer;color:var(--gdark);font-size:15px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .12s}
-.dbtn:hover{color:#f87171;background:rgba(239,68,68,.08)}
-
-.ai-row{display:flex;align-items:stretch;border-top:1px solid var(--bborder);background:var(--bmid)}
-.ai-n{flex:1;border:none;background:transparent;font-family:'Barlow',sans-serif;font-size:12px;color:var(--white);padding:8px 11px;outline:none}
-.ai-t{width:175px;border:none;border-left:1px solid var(--bborder);background:transparent;font-family:'Barlow',sans-serif;font-size:12px;color:var(--white);padding:8px 11px;outline:none}
-.ai-n::placeholder,.ai-t::placeholder{color:var(--gdark);font-style:italic}
-.ai-btn{background:var(--blue);border:none;color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:8px 13px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .12s}
-.ai-btn:hover{opacity:.85}
-
-.as-row{display:flex;align-items:center;gap:9px;margin-bottom:4px}
-.as-inp{flex:1;background:var(--bcard);border:1.5px dashed var(--bborder);color:var(--white);font-family:'Barlow',sans-serif;font-size:13px;padding:9px 13px;border-radius:4px;outline:none;transition:border-color .15s}
-.as-inp:focus{border-color:var(--blue);border-style:solid}
-.as-inp::placeholder{color:var(--gdark);font-style:italic}
-.as-btn{background:var(--bcard);border:1px solid var(--bborder);color:var(--glight);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
-.as-btn:hover{background:var(--blue);border-color:var(--blue);color:var(--white)}
-
-
-/* ── COMMENTS ── */
-.fcomment{position:relative}
-.fcomment input{border:none;background:transparent;font-family:'Barlow',sans-serif;font-size:11px;color:var(--gmid);padding:9px 11px;width:100%;outline:none;height:100%;transition:background .12s}
-.fcomment input:focus{background:rgba(0,163,224,.05);color:var(--white)}
-.fcomment input::placeholder{color:var(--gdark);font-style:italic;font-size:10px}
-.fcomment input:not(:placeholder-shown){color:var(--glight)}
-.cmt-indicator{position:absolute;top:50%;right:8px;transform:translateY(-50%);width:5px;height:5px;border-radius:50%;background:var(--blue);opacity:0;transition:opacity .2s;pointer-events:none}
-.fcomment input:not(:placeholder-shown) ~ .cmt-indicator{opacity:1}
-
-/* ── HOME PAGE ── */
-.home-wrap{min-height:calc(100vh - 52px);background:var(--black)}
-
-.home-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;padding:28px}
-
-.ld-home-card{background:var(--bcard);border:1px solid var(--bborder);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
-.ld-home-card:hover{transform:translateY(-3px);border-color:var(--blue)}
-.ld-home-card-top{padding:18px 20px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.ld-home-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:var(--white);letter-spacing:.02em}
-.ld-home-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--gmid);margin-top:3px}
-.ld-home-countdown{text-align:right;flex-shrink:0}
-.countdown-num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:36px;color:var(--blue);line-height:1}
-.countdown-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--gdark)}
-.countdown-past{font-family:'DM Mono',monospace;font-size:10px;color:#4ade80;letter-spacing:.08em}
-.ld-home-ring-row{display:flex;align-items:center;justify-content:center;padding:10px 20px 20px;gap:28px}
-
-/* ── FACEOFF CIRCLE RING ── */
-.face-ring{position:relative;flex-shrink:0}
-.face-ring svg{display:block}
-.face-ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.face-ring-pct{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--white);line-height:1}
-.face-ring-sub{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--gdark);margin-top:2px}
-
-.ld-home-tiers{flex:1;display:flex;flex-direction:column;gap:6px}
-.ld-tier-row{display:flex;align-items:center;gap:8px}
-.ld-tier-name{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gmid);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ld-tier-bar{flex:1;height:4px;background:var(--bborder);border-radius:2px;overflow:hidden}
-.ld-tier-fill{height:100%;background:var(--blue);border-radius:2px;transition:width .4s}
-.ld-tier-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--gmid);width:32px;text-align:right;flex-shrink:0}
-
-.home-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;background:none;border:1px solid var(--bborder);color:var(--gdark);padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .15s}
-.home-btn:hover{border-color:var(--blue);color:var(--blue)}
-
-/* image upload hidden input */
-
-.ld-card-edit-btn{background:none;border:none;cursor:pointer;font-size:11px;padding:2px 4px;opacity:0;transition:opacity .15s;color:var(--gdark);line-height:1}
-.ld-home-card:hover .ld-card-edit-btn{opacity:1}
-.ld-card-edit-btn:hover{color:var(--blue)}
-/* ── OVERVIEW ── */
-.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:20px 28px}
-.ov-card{background:var(--bcard);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;border:1px solid var(--bborder)}
-.ov-card:hover{transform:translateY(-2px);border-color:var(--blue)}
-.ov-ct{background:var(--bmid);padding:7px 13px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);border-bottom:1px solid var(--bborder)}
-.ov-body{padding:13px}
-.ov-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--white);margin-bottom:9px}
-.ov-bar{height:3px;background:var(--bborder);border-radius:2px;overflow:hidden;margin-bottom:7px}
-.ov-fill{height:100%;background:var(--blue);border-radius:2px}
-.ov-st{display:flex;justify-content:space-between;align-items:center}
-.ov-cnt{font-family:'DM Mono',monospace;font-size:11px;color:var(--gmid)}
-.ov-pct{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--white)}
-.ov-pills{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
+.delbtn{background:none;border:none;cursor:pointer;color:var(--g1);font-size:15px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .12s}
+.delbtn:hover{color:#f87171;background:rgba(239,68,68,.08)}
+.airow{display:flex;align-items:stretch;border-top:1px solid var(--border);background:var(--b2)}
+.ainput{flex:1;border:none;background:transparent;font-family:'Barlow',sans-serif;font-size:12px;color:var(--white);padding:8px 11px;outline:none}
+.ainotes{width:165px;border:none;border-left:1px solid var(--border);background:transparent;font-family:'Barlow',sans-serif;font-size:12px;color:var(--white);padding:8px 11px;outline:none}
+.ainput::placeholder,.ainotes::placeholder{color:var(--g1);font-style:italic}
+.aibtn{background:var(--blue);border:none;color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:8px 13px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .12s}
+.aibtn:hover{opacity:.85}
+.asrow{display:flex;align-items:center;gap:9px;margin-top:4px}
+.asinp{flex:1;background:var(--b3);border:1.5px dashed var(--border);color:var(--white);font-family:'Barlow',sans-serif;font-size:13px;padding:9px 13px;border-radius:4px;outline:none;transition:border-color .15s}
+.asinp:focus{border-color:var(--blue);border-style:solid}
+.asinp::placeholder{color:var(--g1);font-style:italic}
+.asbtn{background:var(--b3);border:1px solid var(--border);color:var(--g3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.asbtn:hover{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding:20px 28px}
+.ovcard{background:var(--b3);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;border:1px solid var(--border)}
+.ovcard:hover{transform:translateY(-2px);border-color:var(--blue)}
+.ovtop{background:var(--b2);padding:7px 13px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);border-bottom:1px solid var(--border)}
+.ovbody{padding:13px}
+.ovname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--white);margin-bottom:9px}
+.ovbar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:7px}
+.ovfill{height:100%;background:var(--blue)}
+.ovrow{display:flex;justify-content:space-between;align-items:center}
+.ovcnt{font-family:'DM Mono',monospace;font-size:11px;color:var(--g2)}
+.ovpct{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--white)}
+.ovpills{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
 .pill{font-family:'DM Mono',monospace;font-size:9px;padding:3px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.05em}
 .pill.c{background:rgba(34,197,94,.1);color:#4ade80}
 .pill.ip{background:rgba(0,163,224,.12);color:var(--blue)}
-.pill.ns{background:rgba(100,116,139,.1);color:#64748B}
-
-/* ── MANAGE PANEL ── */
-.mgr-panel{padding:20px 28px}
-.mgr-panel h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--white);letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
-.mgr-panel p{font-size:12px;color:var(--gmid);margin-bottom:20px}
-.tmc{background:var(--bcard);border:1px solid var(--bborder);border-radius:4px;margin-bottom:10px;overflow:hidden}
-.tmc-h{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bborder);background:var(--bmid)}
-.tmc-n{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--white)}
-.tmc-a{display:flex;gap:6px}
-.tmc-btn{background:none;border:1px solid var(--bborder);color:var(--gmid);font-family:'DM Mono',monospace;font-size:10px;padding:4px 9px;border-radius:3px;cursor:pointer;transition:all .12s}
-.tmc-btn:hover{border-color:var(--blue);color:var(--blue)}
-.tmc-btn.del:hover{border-color:#f87171;color:#f87171}
-.tmc-prods{padding:9px 14px;display:flex;flex-wrap:wrap;gap:6px}
-.pchip{display:flex;align-items:center;gap:5px;background:var(--bmid);border:1px solid var(--bborder);border-radius:3px;padding:4px 9px}
-.pchip-n{font-family:'Barlow',sans-serif;font-size:12px;color:var(--glight)}
-.pchip-d{background:none;border:none;cursor:pointer;color:var(--gdark);font-size:13px;padding:0 0 0 3px;transition:color .12s;line-height:1}
-.pchip-d:hover{color:#f87171}
-.add-tier-row{display:flex;gap:9px;margin-top:6px}
-.ati{flex:1;background:var(--bcard);border:1px solid var(--bborder);color:var(--white);font-family:'Barlow',sans-serif;font-size:13px;padding:8px 11px;border-radius:4px;outline:none;transition:border-color .12s}
-.ati:focus{border-color:var(--blue)}
-.ati::placeholder{color:var(--gdark)}
-.atb{background:var(--blue);border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:8px 18px;border-radius:4px;cursor:pointer;white-space:nowrap}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--bcard);color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:9px 15px;border-radius:3px;border-left:3px solid var(--blue);opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:999}
+.pill.ns{background:rgba(160,174,192,.1);color:#A0AEC0}
+.hwrap{flex:1}
+.hhero{background:var(--black);border-bottom:1px solid var(--border);padding:32px 28px 28px}
+.hhtitle{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;letter-spacing:.06em;text-transform:uppercase;color:var(--white);margin-bottom:4px}
+.hhsub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g1)}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;padding:24px 28px}
+.ldcard{background:var(--b3);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.ldcard:hover{transform:translateY(-3px);border-color:var(--blue)}
+.ldtop{padding:16px 18px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ldleft{flex:1;min-width:0}
+.ldname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--white)}
+.lddaterow{display:flex;align-items:center;gap:8px;margin-top:3px}
+.lddate{font-family:'DM Mono',monospace;font-size:10px;color:var(--g2)}
+.ldeditbtn{background:none;border:none;cursor:pointer;font-size:11px;padding:2px 4px;opacity:0;color:var(--g1);line-height:1;transition:all .12s}
+.ldcard:hover .ldeditbtn{opacity:1}
+.ldeditbtn:hover{color:var(--blue)}
+.ldcd{text-align:right;flex-shrink:0;cursor:pointer}
+.cdnum{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:34px;color:var(--blue);line-height:1}
+.cdlbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--g1)}
+.cdpast{font-family:'DM Mono',monospace;font-size:10px;color:#4ade80}
+.cdset{font-family:'DM Mono',monospace;font-size:9px;color:var(--g1);border:1px solid var(--border);padding:4px 8px;border-radius:3px;transition:all .15s}
+.ldcard:hover .cdset{border-color:var(--g2)}
+.ldringrow{display:flex;align-items:center;justify-content:center;padding:8px 18px 18px;gap:22px}
+.fring{position:relative;flex-shrink:0}
+.fringlbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.fringpct{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:var(--white);line-height:1}
+.fringsub{font-family:'DM Mono',monospace;font-size:8px;color:var(--g1);margin-top:2px}
+.ldtiers{flex:1;display:flex;flex-direction:column;gap:6px}
+.ldtierrow{display:flex;align-items:center;gap:8px}
+.ldtiername{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--g2);width:95px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ldtierbar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.ldtierfill{height:100%;background:var(--blue)}
+.ldtierpct{font-family:'DM Mono',monospace;font-size:10px;color:var(--g2);width:30px;text-align:right;flex-shrink:0}
+.addldbtn{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:1.5px dashed var(--border);color:var(--g1);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;padding:24px;border-radius:8px;cursor:pointer;transition:all .2s;width:100%}
+.addldbtn:hover{border-color:var(--blue);color:var(--blue)}
+.mgrwrap{padding:20px 28px}
+.sechdr{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--white);letter-spacing:.08em;text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+.sechdr::after{content:'';flex:1;height:1px;background:var(--border)}
+.tmc{background:var(--b3);border:1px solid var(--border);border-radius:4px;margin-bottom:10px;overflow:hidden}
+.tmch{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--b2)}
+.tmcname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--white)}
+.tmcacts{display:flex;gap:6px}
+.tmcbtn{background:none;border:1px solid var(--border);color:var(--g2);font-family:'DM Mono',monospace;font-size:10px;padding:4px 9px;border-radius:3px;cursor:pointer;transition:all .12s}
+.tmcbtn:hover{border-color:var(--blue);color:var(--blue)}
+.tmcbtn.del:hover{border-color:#f87171;color:#f87171}
+.tmcprods{padding:9px 14px;display:flex;flex-wrap:wrap;gap:6px}
+.pchip{display:flex;align-items:center;gap:5px;background:var(--b2);border:1px solid var(--border);border-radius:3px;padding:4px 9px}
+.pchipn{font-family:'Barlow',sans-serif;font-size:12px;color:var(--g3)}
+.pchipd{background:none;border:none;cursor:pointer;color:var(--g1);font-size:13px;padding:0 0 0 3px;transition:color .12s;line-height:1}
+.pchipd:hover{color:#f87171}
+.addrow{display:flex;gap:9px;margin-top:6px}
+.addinp{flex:1;background:var(--b3);border:1px solid var(--border);color:var(--white);font-family:'Barlow',sans-serif;font-size:13px;padding:8px 11px;border-radius:4px;outline:none;transition:border-color .12s}
+.addinp:focus{border-color:var(--blue)}
+.addinp::placeholder{color:var(--g1)}
+.addbtn{background:var(--blue);border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:8px 18px;border-radius:4px;cursor:pointer;white-space:nowrap}
+.stlist{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.stitem{display:flex;align-items:center;gap:8px;background:var(--b2);border:1px solid var(--border);border-radius:4px;padding:6px 10px}
+.stpill{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;padding:4px 10px;border-radius:20px;text-transform:uppercase;min-width:110px;text-align:center}
+.stclssel{background:var(--b3);border:1px solid var(--border);color:var(--white);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:3px;outline:none;cursor:pointer;flex-shrink:0}
+.stdel{background:none;border:none;cursor:pointer;color:var(--g1);font-size:14px;margin-left:auto;padding:2px 6px;transition:color .12s;flex-shrink:0}
+.stdel:hover{color:#f87171}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--b3);color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:9px 15px;border-radius:3px;border-left:3px solid var(--blue);opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:999}
 .toast.show{opacity:1;transform:translateY(0)}
-
-/* ── MODAL ── */
+.toast.err{border-left-color:#f87171}
 .mbk{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--bcard);border:1px solid var(--bborder);border-radius:6px;padding:26px;width:430px;max-width:92vw}
-.m-ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--white);margin-bottom:11px;letter-spacing:.05em;text-transform:uppercase}
-.m-msg{font-size:13px;color:var(--gmid);margin-bottom:18px;line-height:1.5}
-.m-inp{width:100%;background:var(--bmid);border:1px solid var(--bborder);color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;padding:8px 11px;border-radius:4px;outline:none;margin-bottom:18px;transition:border-color .12s;display:block}
-.m-inp:focus{border-color:var(--blue)}
-.m-acts{display:flex;gap:9px;justify-content:flex-end}
-.m-cancel{background:transparent;border:1px solid var(--bborder);color:var(--gmid);font-family:'Barlow',sans-serif;font-size:13px;padding:7px 16px;border-radius:4px;cursor:pointer}
-.m-ok{border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:8px 18px;border-radius:4px;cursor:pointer}
-
-
-/* ── STATUS MANAGER ── */
-.st-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.st-item{display:flex;align-items:center;gap:8px;background:var(--bmid);border:1px solid var(--bborder);border-radius:4px;padding:6px 10px}
-.st-pill{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;padding:4px 10px;border-radius:20px;text-transform:uppercase;min-width:110px;text-align:center}
-.st-cls-sel{background:var(--bcard);border:1px solid var(--bborder);color:var(--white);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;border-radius:3px;outline:none;cursor:pointer;flex-shrink:0}
-.st-del{background:none;border:none;cursor:pointer;color:var(--gdark);font-size:14px;margin-left:auto;padding:2px 6px;transition:color .12s;flex-shrink:0}
-.st-del:hover{color:#f87171}
-.st-add-row{display:flex;gap:8px}
-.st-inp{flex:1;background:var(--bcard);border:1px solid var(--bborder);color:var(--white);font-family:'Barlow',sans-serif;font-size:13px;padding:7px 10px;border-radius:4px;outline:none;transition:border-color .12s}
-.st-inp:focus{border-color:var(--blue)}
-.st-inp::placeholder{color:var(--gdark)}
-.st-add-btn{background:var(--bcard);border:1px solid var(--bborder);color:var(--glight);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all .15s}
-.st-add-btn:hover{background:var(--blue);border-color:var(--blue);color:var(--white)}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--white);letter-spacing:.08em;text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
-.section-title::after{content:'';flex:1;height:1px;background:var(--bborder)}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bborder);border-radius:2px}
-::-webkit-scrollbar-thumb:hover{background:var(--gdark)}
+.modal{background:var(--b3);border:1px solid var(--border);border-radius:6px;padding:26px;width:420px;max-width:92vw}
+.mttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--white);margin-bottom:14px;letter-spacing:.05em;text-transform:uppercase}
+.mmsg{font-size:13px;color:var(--g2);margin-bottom:18px;line-height:1.6}
+.mlbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--g1);margin-bottom:5px;display:block}
+.minp{width:100%;background:var(--b2);border:1px solid var(--border);color:var(--white);font-family:'Barlow',sans-serif;font-size:14px;padding:8px 11px;border-radius:4px;outline:none;margin-bottom:14px;transition:border-color .12s;display:block}
+.minp:focus{border-color:var(--blue)}
+.macts{display:flex;gap:9px;justify-content:flex-end;margin-top:4px;align-items:center}
+.mcancel{background:transparent;border:1px solid var(--border);color:var(--g2);font-family:'Barlow',sans-serif;font-size:13px;padding:7px 16px;border-radius:4px;cursor:pointer}
+.mok{border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:8px 18px;border-radius:4px;cursor:pointer}
+.mdel{background:transparent;border:1px solid #555;color:#f87171;font-family:'Barlow',sans-serif;font-size:13px;padding:7px 16px;border-radius:4px;cursor:pointer;margin-right:auto}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--g1)}
 select option{background:#161616;color:white}
 </style>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
-
 <header class="hdr">
   <div class="hdr-l">
     <img class="logo" src="data:image/png;base64,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" alt="TRUE Hockey"/>
     <div class="hdiv"></div>
-    <div class="hdr-title">Launch Asset Tracker</div>
+    <div class="app-title">Launch Tracker</div>
   </div>
-
-  <!-- connection status -->
-  <div id="conn-badge" style="display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--gdark);margin-right:8px">
-    <span id="conn-dot" style="width:7px;height:7px;border-radius:50%;background:var(--gdark);flex-shrink:0;transition:background .3s"></span>
-    <span id="conn-lbl">Connecting…</span>
-  </div>
-  <div class="ld-wrap">
-    <span class="ld-label">Launch Day</span>
-    <select class="ld-select" id="ld-select" onchange="switchLd(this.value)"></select>
-    <span class="ld-pct" id="ld-pct">0%</span>
-    <button class="ld-edit-btn" onclick="editActiveLd()" title="Edit launch day">✏️</button>
-    <button class="ld-add-btn" onclick="addLaunchDay()">+ New Launch Day</button>
+  <div class="hdr-r">
+    <div class="ld-sel-wrap" id="ld-sel-wrap">
+      <span class="ld-sel-lbl">Launch Day</span>
+      <select class="ld-sel" id="ld-select" onchange="switchLd(this.value)"></select>
+    </div>
+    <div class="sync-pill">
+      <span class="sdot" id="sync-dot"></span>
+      <span id="sync-lbl">Saved</span>
+    </div>
   </div>
 </header>
-
 <div class="layout">
   <aside class="sidebar">
-    <div style="margin-bottom:6px">
-      <div class="sb-lbl">Navigation</div>
-      <div class="tier-nav"><button class="tier-btn" onclick="showHome()" id="home-btn"><div class="tier-inner"><div class="tier-dot" style="background:var(--blue)"></div><div class="tier-name">🏠 Home</div></div></button></div>
-      <div class="sb-lbl" style="padding-top:8px">Overview</div>
-      <div class="tier-nav">
-        <button class="tier-btn" onclick="showOverview()" id="ov-btn">
-          <div class="tier-inner"><div class="tier-dot" style="background:var(--blue)"></div><div class="tier-name">All Products</div></div>
-          <div class="tier-pct" id="ov-pct">—</div>
-        </button>
-      </div>
+    <div style="margin-bottom:4px">
+      <div class="sblbl">Navigation</div>
+      <div id="sb-nav"></div>
     </div>
-    <div class="sb-sep"></div>
-    <div style="margin-bottom:6px">
-      <div class="sb-lbl">Tiers &amp; Products</div>
-      <div class="tier-nav" id="tier-nav"></div>
-      <button class="mgr-btn" onclick="showManage()">⚙ Manage tiers &amp; products</button>
+    <div class="sbsep"></div>
+    <div style="margin-bottom:4px">
+      <div class="sblbl">Tiers &amp; Products</div>
+      <div id="sb-tiers"></div>
+      <button class="mgrlnk" onclick="goMgr()">⚙ Manage tiers &amp; products</button>
     </div>
-    <div class="sb-sep"></div>
+    <div class="sbsep"></div>
     <div>
-      <div class="sb-lbl">Quick Add Product</div>
+      <div class="sblbl">Quick Add Product</div>
       <div class="apf">
         <select id="np-tier"></select>
         <input type="text" id="np-name" placeholder="Product name…" onkeydown="if(event.key==='Enter')addProduct()"/>
-        <button class="apf-btn" onclick="addProduct()">+ Add Product</button>
+        <button class="apfbtn" onclick="addProduct()">+ Add Product</button>
       </div>
     </div>
   </aside>
   <main class="main" id="main"></main>
 </div>
-
 <div class="toast" id="toast"></div>
 <div id="mc"></div>
-
 <script>
-// STATUSES are stored in state so they can be customised
-// Default status definitions: {label, colorClass}
-const DEFAULT_STATUSES = [
+
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE — paste your credentials here to enable live sync
+// Leave empty strings for localStorage-only mode
+// ═══════════════════════════════════════════════════════════════
+// ⬇️ PASTE YOUR SUPABASE CREDENTIALS HERE ⬇️
+// 1. Go to supabase.com → your project → Settings → API
+// 2. Copy "Project URL" and paste it between the quotes on the SUPA_URL line
+// 3. Copy "anon / public" key and paste it between the quotes on the SUPA_KEY line
+const SUPA_URL = 'https://gkihxidkwhdgocvymddu.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdraWh4aWRrd2hkZ29jdnltZGR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MTU2NzksImV4cCI6MjA5MTA5MTY3OX0.xGdpNpD-BhHIN6VnaJgaWyIAp8-NCaWG2v0YVCJ9J0A';
+
+// ═══════════════════════════════════════════════════════════════
+// DEFAULTS
+// ═══════════════════════════════════════════════════════════════
+const DEF_STATUSES = [
   {label:'Not Started', cls:'not-started'},
   {label:'In Progress', cls:'in-progress'},
   {label:'Complete',    cls:'complete'},
   {label:'N/A',         cls:'na'},
 ];
-function getStatuses() { return G.statuses || DEFAULT_STATUSES; }
-function statusLabels() { return getStatuses().map(s=>s.label); }
-const ICONS = ['🌐','📱','📷','✍️','🎬','☁️','🏒','📊','📦','🎯','🔗','📋','🛠️','💬','🎨','⭐','🔥','📐'];
+const CLS_OPTIONS = [
+  {cls:'not-started',label:'Grey'},{cls:'in-progress',label:'Blue'},
+  {cls:'complete',label:'Green'},{cls:'na',label:'Dim'},{cls:'custom',label:'Purple'},
+];
+const ICONS = ['🌐','📱','📷','✍️','🎬','☁️','🏒','📊','📦','🎯','🔗','📋','🛠️','💬','🎨','⭐'];
 
-// Default section template — cloned fresh for each new launch day
-const DEFAULT_SECTIONS = {
-  'Flagship & Custom': [
-    {id:'fc_s1',name:'Digital & Web Assets',icon:'🌐',items:[
-      {id:'fc_i1',name:"Web banners — spec'd production files",notes:'Key Account and Retailer specs. ENG + FR.'},
-      {id:'fc_i2',name:'Web banners — working / source files',notes:'Working files for smaller accounts to resize.'},
-      {id:'fc_i3',name:'Email assets',notes:'True Eblast assets.'},
-      {id:'fc_i4',name:'True-sports.com Landing page',notes:'Full-width hero and supporting visuals.'},
-      {id:'fc_i5',name:'SKU Page Elements',notes:'Key tech, short copy, product images — all model ranges.'},
+const DEF_SECS = {
+  'Flagship & Custom':[
+    {id:'s1',name:'Digital & Web Assets',icon:'🌐',items:[
+      {id:'s1a',name:"Web banners — spec'd production files",notes:'Key Account and Retailer specs. ENG + FR.'},
+      {id:'s1b',name:'Web banners — working / source files',notes:'Working files for smaller accounts to resize.'},
+      {id:'s1c',name:'Email assets',notes:'True Eblast assets.'},
+      {id:'s1d',name:'true-sports.com Landing page',notes:'Full-width hero and supporting visuals.'},
+      {id:'s1e',name:'SKU Page Elements',notes:'Key tech, short copy, product images — all model ranges.'},
     ]},
-    {id:'fc_s2',name:'Social Media Assets',icon:'📱',items:[
-      {id:'fc_i6',name:'Hype / teaser assets',notes:'Feed + Stories/Reels. @truehockey.hq and/or @true.goalie.'},
-      {id:'fc_i7',name:'Informative / feature callout assets',notes:'Key tech highlights for organic feed.'},
-      {id:'fc_i8',name:'Launch day hero post',notes:'Primary announcement asset across all active channels.'},
-      {id:'fc_i9',name:'Retailer co-op social toolkit',notes:'Editable templates or locked assets for retail partners.'},
-      {id:'fc_i10',name:'Campaign / brand story asset',notes:'Longer-form narrative post or carousel anchoring the campaign.'},
-      {id:'fc_i11',name:'Paid social creative',notes:'Dark-post or boosted creative variants for paid campaigns.'},
+    {id:'s2',name:'Social Media Assets',icon:'📱',items:[
+      {id:'s2a',name:'Hype / teaser assets',notes:'Feed + Stories/Reels. @truehockey.hq and/or @true.goalie.'},
+      {id:'s2b',name:'Informative / feature callout assets',notes:'Key tech highlights for organic feed.'},
+      {id:'s2c',name:'Launch day hero post',notes:'Primary announcement asset across all active channels.'},
+      {id:'s2d',name:'Retailer co-op social toolkit',notes:'Editable templates or locked assets for retail partners.'},
+      {id:'s2e',name:'Campaign / brand story asset',notes:'Longer-form narrative post or carousel.'},
+      {id:'s2f',name:'Paid social creative',notes:'Dark-post or boosted creative variants for paid campaigns.'},
     ]},
-    {id:'fc_s3',name:'Product Photography',icon:'📷',items:[
-      {id:'fc_i12',name:'Hero product shots',notes:'White/grey background, all SKUs in launch lineup.'},
-      {id:'fc_i13',name:'Lifestyle / action shots',notes:'On-ice or in-use context imagery.'},
-      {id:'fc_i14',name:'Detail / feature callout shots',notes:'Close-ups supporting key tech claims.'},
-      {id:'fc_i15',name:'Behind-the-scenes / development imagery',notes:'R&D or athlete collaboration content for storytelling.'},
+    {id:'s3',name:'Product Photography',icon:'📷',items:[
+      {id:'s3a',name:'Hero product shots',notes:'White/grey background, all SKUs in launch lineup.'},
+      {id:'s3b',name:'Lifestyle / action shots',notes:'On-ice or in-use context imagery.'},
+      {id:'s3c',name:'Detail / feature callout shots',notes:'Close-ups supporting key tech claims.'},
+      {id:'s3d',name:'Behind-the-scenes / development imagery',notes:'R&D or athlete collaboration content.'},
     ]},
-    {id:'fc_s4',name:'Copy & Content',icon:'✍️',items:[
-      {id:'fc_i16',name:'English e-commerce copy',notes:'Long copy, short copy, key features table, SEO — per SKU.'},
-      {id:'fc_i17',name:'Quebec French e-commerce copy',notes:'Full translation reviewed for accuracy.'},
-      {id:'fc_i18',name:'Long-form campaign / brand story copy',notes:'Editorial narrative supporting flagship positioning.'},
-      {id:'fc_i19',name:'Retailer copy variants',notes:'Headlines and body copy for paid social and display.'},
+    {id:'s4',name:'Copy & Content',icon:'✍️',items:[
+      {id:'s4a',name:'English e-commerce copy',notes:'Long copy, short copy, key features table, SEO — per SKU.'},
+      {id:'s4b',name:'Quebec French e-commerce copy',notes:'Full translation reviewed for accuracy.'},
+      {id:'s4c',name:'Long-form campaign / brand story copy',notes:'Editorial narrative supporting flagship positioning.'},
+      {id:'s4d',name:'Retailer copy variants',notes:'Headlines and body copy for paid social and display.'},
     ]},
-    {id:'fc_s5',name:'Video & Training Content',icon:'🎬',items:[
-      {id:'fc_i20',name:'Product knowledge video series',notes:'True Academy ENDVR video content.'},
-      {id:'fc_i21',name:'Retailer staff training book',notes:'Highly detailed document to support video content.'},
+    {id:'s5',name:'Video & Training Content',icon:'🎬',items:[
+      {id:'s5a',name:'Product knowledge video series',notes:'True Academy ENDVR video content.'},
+      {id:'s5b',name:'Retailer staff training book',notes:'Highly detailed document to support video content.'},
     ]},
-    {id:'fc_s6',name:'DAM & Platform Uploads',icon:'☁️',items:[
-      {id:'fc_i22',name:'All copy uploaded to Canto (PIM)',notes:'ENG + FR, organized by SKU and category.'},
-      {id:'fc_i23',name:'All photography uploaded to Canto (DAM)',notes:'Hi-res originals + web-optimized exports, tagged.'},
-      {id:'fc_i24',name:'All digital assets uploaded to Canto',notes:'Banners, social, email, working files.'},
-      {id:'fc_i25',name:'Product + copy to Canadian Tire portal',notes:'Per CT spec. Confirmed live before launch date.'},
-      {id:'fc_i26',name:'Video assets uploaded to Canto (DAM)',notes:'All video deliverables archived and tagged.'},
+    {id:'s6',name:'DAM & Platform Uploads',icon:'☁️',items:[
+      {id:'s6a',name:'All copy uploaded to Canto (PIM)',notes:'ENG + FR, organized by SKU and category.'},
+      {id:'s6b',name:'All photography uploaded to Canto (DAM)',notes:'Hi-res originals + web-optimized exports, tagged.'},
+      {id:'s6c',name:'All digital assets uploaded to Canto',notes:'Banners, social, email, working files.'},
+      {id:'s6d',name:'Product + copy to Canadian Tire portal',notes:'Per CT spec. Confirmed live before launch date.'},
+      {id:'s6e',name:'Video assets uploaded to Canto (DAM)',notes:'All video deliverables archived and tagged.'},
     ]},
-    {id:'fc_s7',name:'Seeding & Key Accounts',icon:'🏒',items:[
-      {id:'fc_i27',name:'Product sent to key accounts',notes:'Delivery windows confirmed against launch embargo.'},
-      {id:'fc_i28',name:'Product sent to influencers / athletes',notes:'NDA / embargo confirmed before shipping.'},
-      {id:'fc_i29',name:'Influencer / talent brief',notes:'Content guidelines, posting windows, brand tone ref.'},
-      {id:'fc_i30',name:'Elite athlete / ambassador program',notes:'Dedicated seeding and content strategy.'},
-      {id:'fc_i31',name:'Media / press kit',notes:'Press release, hi-res imagery, and brand backgrounder.'},
+    {id:'s7',name:'Seeding & Key Accounts',icon:'🏒',items:[
+      {id:'s7a',name:'Product sent to key accounts',notes:'Delivery windows confirmed against launch embargo.'},
+      {id:'s7b',name:'Product sent to influencers / athletes',notes:'NDA / embargo confirmed before shipping.'},
+      {id:'s7c',name:'Influencer / talent brief',notes:'Content guidelines, posting windows, brand tone ref.'},
+      {id:'s7d',name:'Elite athlete / ambassador program',notes:'Dedicated seeding and content strategy.'},
+      {id:'s7e',name:'Media / press kit',notes:'Press release, hi-res imagery, and brand backgrounder.'},
     ]},
-    {id:'fc_s8',name:'Internal & Sales Enablement',icon:'📊',items:[
-      {id:'fc_i32',name:'Sales one-pager / fact sheet',notes:'Quick-reference product overview for reps. ENG + FR.'},
-      {id:'fc_i33',name:'Full sales playbook / sell-in deck',notes:'Comprehensive deck with positioning, features, competitive landscape.'},
-      {id:'fc_i34',name:'Launch briefing / town hall materials',notes:'Internal presentation for cross-functional launch alignment.'},
+    {id:'s8',name:'Internal & Sales Enablement',icon:'📊',items:[
+      {id:'s8a',name:'Sales one-pager / fact sheet',notes:'Quick-reference product overview for reps. ENG + FR.'},
+      {id:'s8b',name:'Full sales playbook / sell-in deck',notes:'Deck with positioning, features, competitive landscape.'},
+      {id:'s8c',name:'Launch briefing / town hall materials',notes:'Internal presentation for cross-functional alignment.'},
     ]},
   ],
-  'Midrange': [
-    {id:'mr_s1',name:'Digital & Web Assets',icon:'🌐',items:[{id:'mr_i1',name:'Email assets',notes:'True Eblast assets.'},{id:'mr_i2',name:'SKU Page Elements',notes:'Key tech, short copy, product images — all model ranges.'}]},
-    {id:'mr_s2',name:'Social Media Assets',icon:'📱',items:[{id:'mr_i3',name:'Informative / feature callout assets',notes:'Key tech highlights for organic feed.'},{id:'mr_i4',name:'Retailer co-op social toolkit',notes:'Editable templates or locked assets for retail partners.'}]},
-    {id:'mr_s3',name:'Product Photography',icon:'📷',items:[{id:'mr_i5',name:'Hero product shots',notes:'White/grey background, all SKUs in launch lineup.'},{id:'mr_i6',name:'Lifestyle / action shots',notes:'On-ice or in-use context imagery.'}]},
-    {id:'mr_s4',name:'Copy & Content',icon:'✍️',items:[{id:'mr_i7',name:'English e-commerce copy',notes:'Long copy, short copy, key features table, SEO — per SKU.'},{id:'mr_i8',name:'Quebec French e-commerce copy',notes:'Full translation reviewed for accuracy.'},{id:'mr_i9',name:'Retailer copy variants',notes:'Headlines and body copy for paid social and display.'}]},
-    {id:'mr_s5',name:'Video & Training Content',icon:'🎬',items:[{id:'mr_i10',name:'Product knowledge video series',notes:'True Academy ENDVR video content.'},{id:'mr_i11',name:'Retailer staff training book',notes:'Highly detailed document to support video content.'}]},
-    {id:'mr_s6',name:'DAM & Platform Uploads',icon:'☁️',items:[{id:'mr_i12',name:'All copy uploaded to Canto (PIM)',notes:'ENG + FR, organized by SKU and category.'},{id:'mr_i13',name:'All photography uploaded to Canto (DAM)',notes:'Hi-res originals + web-optimized exports, tagged.'},{id:'mr_i14',name:'All digital assets uploaded to Canto',notes:'Banners, social, email, working files.'},{id:'mr_i15',name:'Product + copy to Canadian Tire portal',notes:'Per CT spec. Confirmed live before launch date.'},{id:'mr_i16',name:'Video assets uploaded to Canto (DAM)',notes:'All video deliverables archived and tagged.'}]},
+  'Midrange':[
+    {id:'m1',name:'Digital & Web Assets',icon:'🌐',items:[{id:'m1a',name:'Email assets',notes:'True Eblast assets.'},{id:'m1b',name:'SKU Page Elements',notes:'Key tech, short copy, product images.'}]},
+    {id:'m2',name:'Social Media Assets',icon:'📱',items:[{id:'m2a',name:'Informative / feature callout assets',notes:'Key tech highlights for organic feed.'},{id:'m2b',name:'Retailer co-op social toolkit',notes:'Editable templates for retail partners.'}]},
+    {id:'m3',name:'Product Photography',icon:'📷',items:[{id:'m3a',name:'Hero product shots',notes:'White/grey background, all SKUs.'},{id:'m3b',name:'Lifestyle / action shots',notes:'On-ice or in-use context imagery.'}]},
+    {id:'m4',name:'Copy & Content',icon:'✍️',items:[{id:'m4a',name:'English e-commerce copy',notes:'Long copy, short copy, key features, SEO — per SKU.'},{id:'m4b',name:'Quebec French e-commerce copy',notes:'Full translation reviewed for accuracy.'},{id:'m4c',name:'Retailer copy variants',notes:'Headlines and body copy for paid social and display.'}]},
+    {id:'m5',name:'Video & Training Content',icon:'🎬',items:[{id:'m5a',name:'Product knowledge video series',notes:'True Academy ENDVR video content.'},{id:'m5b',name:'Retailer staff training book',notes:'Highly detailed document to support video content.'}]},
+    {id:'m6',name:'DAM & Platform Uploads',icon:'☁️',items:[{id:'m6a',name:'All copy uploaded to Canto (PIM)',notes:'ENG + FR, organized by SKU and category.'},{id:'m6b',name:'All photography uploaded to Canto (DAM)',notes:'Hi-res originals + web-optimized exports, tagged.'},{id:'m6c',name:'All digital assets uploaded to Canto',notes:'Banners, social, email, working files.'},{id:'m6d',name:'Product + copy to Canadian Tire portal',notes:'Per CT spec.'},{id:'m6e',name:'Video assets uploaded to Canto (DAM)',notes:'All video deliverables archived and tagged.'}]},
   ],
-  'Accessories': [
-    {id:'ac_s1',name:'Digital & Web Assets',icon:'🌐',items:[{id:'ac_i1',name:'Email assets',notes:'True Eblast assets.'},{id:'ac_i2',name:'SKU Page Elements',notes:'Key tech, short copy, product images — all model ranges.'}]},
-    {id:'ac_s2',name:'Product Photography',icon:'📷',items:[{id:'ac_i3',name:'Hero product shots',notes:'White/grey background, all SKUs in launch lineup.'},{id:'ac_i4',name:'Lifestyle / action shots',notes:'On-ice or in-use context imagery.'}]},
-    {id:'ac_s3',name:'Copy & Content',icon:'✍️',items:[{id:'ac_i5',name:'English e-commerce copy',notes:'Long copy, short copy, key features table, SEO — per SKU.'},{id:'ac_i6',name:'Quebec French e-commerce copy',notes:'Full translation reviewed for accuracy.'},{id:'ac_i7',name:'Retailer copy variants',notes:'Headlines and body copy for paid social and display.'}]},
-    {id:'ac_s4',name:'DAM & Platform Uploads',icon:'☁️',items:[{id:'ac_i8',name:'All copy uploaded to Canto (PIM)',notes:'ENG + FR, organized by SKU and category.'},{id:'ac_i9',name:'All photography uploaded to Canto (DAM)',notes:'Hi-res originals + web-optimized exports, tagged.'},{id:'ac_i10',name:'All digital assets uploaded to Canto',notes:'Banners, social, email, working files.'},{id:'ac_i11',name:'Product + copy to Canadian Tire portal',notes:'Per CT spec. Confirmed live before launch date.'}]},
+  'Accessories':[
+    {id:'a1',name:'Digital & Web Assets',icon:'🌐',items:[{id:'a1a',name:'Email assets',notes:'True Eblast assets.'},{id:'a1b',name:'SKU Page Elements',notes:'Key tech, short copy, product images.'}]},
+    {id:'a2',name:'Product Photography',icon:'📷',items:[{id:'a2a',name:'Hero product shots',notes:'White/grey background, all SKUs.'},{id:'a2b',name:'Lifestyle / action shots',notes:'On-ice or in-use context imagery.'}]},
+    {id:'a3',name:'Copy & Content',icon:'✍️',items:[{id:'a3a',name:'English e-commerce copy',notes:'Long copy, short copy, key features, SEO — per SKU.'},{id:'a3b',name:'Quebec French e-commerce copy',notes:'Full translation reviewed for accuracy.'},{id:'a3c',name:'Retailer copy variants',notes:'Headlines and body copy for paid social and display.'}]},
+    {id:'a4',name:'DAM & Platform Uploads',icon:'☁️',items:[{id:'a4a',name:'All copy uploaded to Canto (PIM)',notes:'ENG + FR, organized by SKU and category.'},{id:'a4b',name:'All photography uploaded to Canto (DAM)',notes:'Hi-res originals + web-optimized exports, tagged.'},{id:'a4c',name:'All digital assets uploaded to Canto',notes:'Banners, social, email, working files.'},{id:'a4d',name:'Product + copy to Canadian Tire portal',notes:'Per CT spec.'}]},
   ],
 };
 
-// ── STATE ──────────────────────────────────────────────
-// Each launch day owns:
-//   sections: {tier → [{id,name,icon,items:[{id,name,notes}]}]}
-//   products: {tier → [name]}
-//   tiers: [name]
-//   status: {tier+'||'+prod → {itemId → {status,owner,due}}}
-//
-// Global (shared): nothing — each launch day is fully independent.
-// Shared across days: just the tier/product list (for convenience),
-//   but sections/items are per-day.
-
-// ── FIREBASE CONFIG ────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyC-RWX4fLFcxyBehw6ufJHiK8z9Dgm8B8Y",
-  authDomain: "true-launch-asset-tracker.firebaseapp.com",
-  databaseURL: "https://true-launch-asset-tracker-default-rtdb.firebaseio.com",
-  projectId: "true-launch-asset-tracker",
-  storageBucket: "true-launch-asset-tracker.firebasestorage.app",
-  messagingSenderId: "1336956445",
-  appId: "1:1336956445:web:303a79c1093c49a75558f4"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const STATE_REF = db.ref('tracker/state');
-
-// ── STATE ───────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
 let _uid = Date.now();
-const uid = () => 'u'+(++_uid);
-let view = {type:'home'};
-let _saveTimeout = null;
-let _listening = false;
-let _isSaving = false;
+const uid = () => 'u' + (++_uid);
+let V = {type:'home'};   // current view
+let _st = null;          // supabase client
+let _saveTimer = null;
 
-function freshDay(name) {
+function freshDay(name, date) {
   return {
-    id: uid(),
-    name,
+    id: uid(), name, date: date||'',
     tiers: ['Flagship & Custom','Midrange','Accessories'],
     products: {
       'Flagship & Custom': ['Catalyst NITRO Goalie Pad','Catalyst NITRO Catcher','Catalyst NITRO Blocker'],
-      'Midrange': ['XC9 ACF Skate','XC7 Skate'],
-      'Accessories': ['Goalie Stick Tape','TRUE Bag'],
+      'Midrange':          ['XC9 ACF Skate','XC7 Skate'],
+      'Accessories':       ['Goalie Stick Tape','TRUE Bag'],
     },
-    sections: JSON.parse(JSON.stringify(DEFAULT_SECTIONS)),
+    sections: JSON.parse(JSON.stringify(DEF_SECS)),
     status: {},
   };
 }
 
-function defaultState() {
-  const day = freshDay('May 22, 2026');
-  return { launchDays: [day], activeId: day.id, statuses: JSON.parse(JSON.stringify(DEFAULT_STATUSES)) };
+function defState() {
+  const d = freshDay('May 22, 2026','2026-05-22');
+  return {launchDays:[d], activeId:d.id, statuses:JSON.parse(JSON.stringify(DEF_STATUSES))};
 }
 
-let G = defaultState();
-
-// Debounced save — batches rapid changes into one Firebase write
-// localStorage backup — written before every Firebase attempt
-function saveLocal() {
-  try { localStorage.setItem('true_tracker_backup', JSON.stringify(G)); } catch(e) {}
+function loadLocal() {
+  try {
+    const r = localStorage.getItem('tlt_v1');
+    if (r) {
+      const p = JSON.parse(r);
+      if (p && p.launchDays && p.launchDays.length) {
+        if (!p.statuses) p.statuses = JSON.parse(JSON.stringify(DEF_STATUSES));
+        return p;
+      }
+    }
+  } catch(e) {}
+  return defState();
 }
 
-// Strip large data that shouldn't go to Firebase
-function serializeState() {
-  const copy = JSON.parse(JSON.stringify(G));
-  return copy;
+let G = loadLocal();
+
+// ═══════════════════════════════════════════════════════════════
+// SYNC UI
+// ═══════════════════════════════════════════════════════════════
+function setSyncUI(state, txt) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-lbl');
+  if (!dot||!lbl) return;
+  dot.className = 'sdot ' + (state==='ok'?'ok':state==='busy'?'busy':'err');
+  lbl.textContent = txt || (state==='ok'?'Saved':state==='busy'?'Saving…':'Error');
 }
 
-function setConnUI(ok, label) {
-  const dot = document.getElementById('conn-dot');
-  const lbl = document.getElementById('conn-lbl');
-  if (dot) dot.style.background = ok ? '#4ade80' : '#f87171';
-  if (lbl) { lbl.style.color = ok ? '#4ade80' : '#f87171'; lbl.textContent = label || (ok ? 'Live' : 'Offline'); }
+// ═══════════════════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════════════════
+function save() {
+  // Always write locally first
+  try { localStorage.setItem('tlt_v1', JSON.stringify(G)); } catch(e) {}
+  setSyncUI('busy');
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async () => {
+    if (_st) {
+      try {
+        const {error} = await _st
+          .from('tracker_state')
+          .upsert({id:1, state:G}, {onConflict:'id'});
+        if (error) throw error;
+        setSyncUI('ok');
+      } catch(e) {
+        console.error('Supabase save error:', e);
+        setSyncUI('err', 'Saved locally');
+      }
+    } else {
+      setSyncUI('ok');
+    }
+  }, 400);
 }
 
-function handleSaveError(err) {
-  _isSaving = false;
-  const msg = String(err);
-  console.error('Firebase save error:', err);
-  if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
-    setConnUI(false, 'Rules expired');
-    showRulesModal();
-  } else {
-    setConnUI(false, 'Offline — saved locally');
-    toast('No connection — data saved locally and will sync when back online');
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE INIT
+// ═══════════════════════════════════════════════════════════════
+async function initSupabase() {
+  if (!SUPA_URL || !SUPA_KEY) { setSyncUI('ok'); return; }
+  try {
+    const {createClient} = await import('https://esm.sh/@supabase/supabase-js@2');
+    _st = createClient(SUPA_URL, SUPA_KEY);
+
+    // Load latest state
+    const {data, error} = await _st
+      .from('tracker_state')
+      .select('state')
+      .eq('id', 1)
+      .single();
+
+    if (!error && data && data.state && data.state.launchDays && data.state.launchDays.length) {
+      const remote = data.state;
+      const curId = G.activeId;
+      G = remote;
+      if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEF_STATUSES));
+      G.activeId = G.launchDays.find(d => d.id === curId) ? curId : G.launchDays[0].id;
+      localStorage.setItem('tlt_v1', JSON.stringify(G));
+      render();
+    } else if (!error) {
+      // First run — push defaults
+      await _st.from('tracker_state').upsert({id:1, state:G}, {onConflict:'id'});
+    }
+    setSyncUI('ok');
+
+    // Real-time subscription
+    _st.channel('tracker_changes')
+      .on('postgres_changes',
+        {event:'UPDATE', schema:'public', table:'tracker_state', filter:'id=eq.1'},
+        payload => {
+          const remote = payload.new?.state;
+          if (!remote || !remote.launchDays || !remote.launchDays.length) return;
+          const curId = G.activeId;
+          G = remote;
+          if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEF_STATUSES));
+          G.activeId = G.launchDays.find(d => d.id === curId) ? curId : G.launchDays[0].id;
+          localStorage.setItem('tlt_v1', JSON.stringify(G));
+          setSyncUI('ok');
+          // Don't interrupt typing
+          const f = document.activeElement;
+          if (f && (f.tagName==='INPUT'||f.tagName==='SELECT'||f.tagName==='TEXTAREA')) {
+            f.addEventListener('blur', () => render(), {once:true});
+          } else {
+            render();
+          }
+        })
+      .subscribe();
+
+  } catch(e) {
+    console.error('Supabase init error:', e);
+    setSyncUI('err', 'Local only');
   }
 }
 
-function showRulesModal() {
-  if (window._rulesModalShown) return;
-  window._rulesModalShown = true;
-  document.getElementById('mc').innerHTML =
-    '<div class="mbk"><div class="modal">' +
-    '<div class="m-ttl" style="color:#f87171">⚠ Firebase Rules Expired</div>' +
-    '<div class="m-msg">Your Firebase database rules have expired. ' +
-    'Data is no longer saving to the cloud.<br><br>' +
-    '<strong>Fix in 30 seconds:</strong><br>' +
-    '1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--blue)">console.firebase.google.com</a><br>' +
-    '2. Build → Realtime Database → Rules<br>' +
-    '3. Paste this and click Publish:<br><br>' +
-    '<code style="background:var(--bmid);padding:10px;display:block;border-radius:4px;font-size:12px;line-height:1.6">' +
-    '{<br>&nbsp;&nbsp;"rules": {<br>&nbsp;&nbsp;&nbsp;&nbsp;".read": true,<br>&nbsp;&nbsp;&nbsp;&nbsp;".write": true<br>&nbsp;&nbsp;}<br>}' +
-    '</code><br>' +
-    'Your data is safe — it's backed up locally in this browser.</div>' +
-    '<div class="m-acts"><button class="m-ok" style="background:var(--blue)" onclick="closeModal();window._rulesModalShown=false">Got it</button></div>' +
-    '</div></div>';
-}
-
-function save() {
-  saveLocal(); // always backup locally first
-  clearTimeout(_saveTimeout);
-  _saveTimeout = setTimeout(() => {
-    _isSaving = true;
-    STATE_REF.set(serializeState())
-      .then(() => {
-        _isSaving = false;
-        setConnUI(true, 'Live');
-      })
-      .catch(err => handleSaveError(err));
-  }, 300);
-}
-
-// Listen for changes from other teammates
-function startListening() {
-  if (_listening) return;
-  _listening = true;
-  STATE_REF.on('value', (snapshot) => {
-    const remote = snapshot.val();
-    if (!remote || !remote.launchDays || !remote.launchDays.length) {
-      // Data missing — don't write from listener (initial load handles seeding)
-      return;
-    }
-
-    // Preserve each user's local view
-    const localActiveId = G.activeId;
-    G = remote;
-    if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-    if (remote.launchDays.find(d => d.id === localActiveId)) {
-      G.activeId = localActiveId;
-    }
-
-    // Don't interrupt the user mid-typing — queue the render until they blur
-    const focused = document.activeElement;
-    const isTyping = focused && (
-      focused.tagName === 'INPUT' ||
-      focused.tagName === 'TEXTAREA' ||
-      focused.tagName === 'SELECT'
-    );
-    if (isTyping) {
-      if (!focused._pendingRemote) {
-        focused._pendingRemote = true;
-        focused.addEventListener('blur', function handler() {
-          focused._pendingRemote = false;
-          focused.removeEventListener('blur', handler);
-          render();
-        }, { once: true });
-      }
-    } else {
-      render();
-    }
-  }, (err) => {
-    // Listener error — usually means rules expired
-    const msg = String(err);
-    if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
-      setConnUI(false, 'Rules expired');
-      showRulesModal();
-    } else {
-      setConnUI(false, 'Offline');
-    }
-  });
-}
-
-// Live connection indicator
-db.ref('.info/connected').on('value', (snap) => {
-  setConnUI(!!snap.val(), snap.val() ? 'Live' : 'Offline');
-});
-
+// ═══════════════════════════════════════════════════════════════
+// ACCESSORS
+// ═══════════════════════════════════════════════════════════════
 function ald() {
   if (!G || !G.launchDays || !G.launchDays.length) return null;
   return G.launchDays.find(d => d.id === G.activeId) || G.launchDays[0];
 }
-
-// ── ACCESSORS (scoped to active day) ──────────────────
-function getSecs(tier) { const d=ald(); return (d && d.sections && d.sections[tier]) || []; }
-function getIS(tier, prod, iid) { const d=ald(); return ((d && d.status && d.status[tier+'||'+prod]) || {})[iid] || {status:'Not Started',owner:'',due:''}; }
-function setIS(tier, prod, iid, field, val) {
+function gsecs(tier) {
+  const d = ald();
+  return (d && d.sections && d.sections[tier]) || [];
+}
+function gis(tier, prod, iid) {
+  const d = ald();
+  return ((d && d.status && d.status[`${tier}||${prod}`]) || {})[iid]
+    || {status:'Not Started', owner:'', due:'', comment:''};
+}
+function sis(tier, prod, iid, field, val) {
   const d = ald(); if (!d) return;
   if (!d.status) d.status = {};
-  if (!d.status[tier+'||'+prod]) d.status[tier+'||'+prod] = {};
-  if (!d.status[tier+'||'+prod][iid]) d.status[tier+'||'+prod][iid] = {status:'Not Started',owner:'',due:''};
-  d.status[tier+'||'+prod][iid][field] = val; save();
+  const k = `${tier}||${prod}`;
+  if (!d.status[k]) d.status[k] = {};
+  if (!d.status[k][iid]) d.status[k][iid] = {status:'Not Started',owner:'',due:'',comment:''};
+  d.status[k][iid][field] = val;
+  save();
 }
+function gstatuses() { return G.statuses || DEF_STATUSES; }
 
-// ── STATS ──────────────────────────────────────────────
-function prodStats(tier, prod) {
-  let tot=0,done=0,ip=0,ns=0;
-  for (const sec of getSecs(tier)) for (const it of sec.items) {
-    const s=getIS(tier,prod,it.id).status;
-    if(s==='N/A') continue; tot++;
-    if(s==='Complete') done++; else if(s==='In Progress') ip++; else ns++;
+// ═══════════════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════════════
+function prodStats(tier, prod, day) {
+  day = day || ald();
+  let tot=0, done=0, ip=0, ns=0;
+  const secs = (day && day.sections && day.sections[tier]) || [];
+  for (const sec of secs) for (const it of sec.items) {
+    const s = ((day.status && day.status[`${tier}||${prod}`]) || {})[it.id]?.status || 'Not Started';
+    if (s==='N/A') continue;
+    tot++;
+    if (s==='Complete') done++;
+    else if (s==='In Progress') ip++;
+    else ns++;
   }
-  return {tot,done,ip,ns,pct:tot?Math.round(done/tot*100):0};
+  return {tot, done, ip, ns, pct: tot ? Math.round(done/tot*100) : 0};
 }
-function tierStats(tier) {
-  const d=ald(); let tot=0,done=0;
-  for (const p of (d.products[tier]||[])) { const s=prodStats(tier,p); tot+=s.tot; done+=s.done; }
-  return {tot,done,pct:tot?Math.round(done/tot*100):0};
+function tierStats(tier, day) {
+  day = day || ald();
+  let tot=0, done=0;
+  for (const p of ((day && day.products && day.products[tier]) || [])) {
+    const s = prodStats(tier, p, day);
+    tot += s.tot; done += s.done;
+  }
+  return {tot, done, pct: tot ? Math.round(done/tot*100) : 0};
 }
-function dayStats(ldId) {
-  const prev=G.activeId; G.activeId=ldId;
-  const d=G.launchDays.find(x=>x.id===ldId);
-  let tot=0,done=0;
-  for (const t of (d?.tiers||[])) { const s=tierStats(t); tot+=s.tot; done+=s.done; }
-  G.activeId=prev;
-  return {tot,done,pct:tot?Math.round(done/tot*100):0};
-}
-function allStats() {
-  const d=ald(); let tot=0,done=0;
-  for (const t of d.tiers) { const s=tierStats(t); tot+=s.tot; done+=s.done; }
-  return {tot,done,pct:tot?Math.round(done/tot*100):0};
+function allStats(day) {
+  day = day || ald();
+  if (!day) return {tot:0, done:0, pct:0, ip:0};
+  let tot=0, done=0, ip=0;
+  for (const t of day.tiers) {
+    for (const p of (day.products[t]||[])) {
+      const s = prodStats(t, p, day);
+      tot += s.tot; done += s.done; ip += s.ip;
+    }
+  }
+  return {tot, done, ip, pct: tot ? Math.round(done/tot*100) : 0};
 }
 
-// ── LAUNCH DAY SWITCHER ────────────────────────────────
-function renderLdDropdown() {
-  const sel = document.getElementById('ld-select');
-  if (!sel || !G.launchDays) return;
+// ═══════════════════════════════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════════════════════════════
+function render() { renderHdr(); renderSB(); renderMain(); }
+
+function renderHdr() {
+  const wrap = document.getElementById('ld-sel-wrap');
+  const sel  = document.getElementById('ld-select');
+  if (!wrap || !sel) return;
+  const onHome = V.type === 'home';
+  if (onHome) { wrap.classList.remove('show'); return; }
+  wrap.classList.add('show');
   sel.innerHTML = G.launchDays.map(d =>
-    `<option value="${d.id}" ${d.id===G.activeId?'selected':''}>${x(d.name)}</option>`
+    `<option value="${d.id}"${d.id===G.activeId?' selected':''}>${xe(d.name)}</option>`
   ).join('');
-  const pctEl = document.getElementById('ld-pct');
-  if (pctEl) pctEl.textContent = allStats().pct + '%';
 }
 
-function switchLd(id) {
-  G.activeId = id;
-  view = {type:'overview'};
-  save(); render();
+function renderSB() {
+  const nav = document.getElementById('sb-nav');
+  if (nav) {
+    const as = allStats();
+    nav.innerHTML = `
+      <button class="nb${V.type==='home'?' on':''}" onclick="goHome()">
+        <div class="nbi"><div class="nbdot" style="background:var(--blue)"></div><div class="nblbl">🏠 Home</div></div>
+      </button>
+      <button class="nb${V.type==='overview'?' on':''}" onclick="goOv()">
+        <div class="nbi"><div class="nbdot"></div><div class="nblbl">All Products</div></div>
+        <div class="nbpct">${as.pct}%</div>
+      </button>`;
+  }
+  const tn = document.getElementById('sb-tiers');
+  const ts = document.getElementById('np-tier');
+  if (!tn) return;
+  tn.innerHTML = '';
+  const d = ald(); if (!d) return;
+  if (ts) ts.innerHTML = d.tiers.map(t => `<option value="${xe(t)}">${xe(t)}</option>`).join('');
+  for (const tier of d.tiers) {
+    const pct = tierStats(tier).pct;
+    const open = (V.type==='product'||V.type==='manage') && V.tier===tier;
+    const tb = document.createElement('button');
+    tb.className = 'nb' + (open?' on':'');
+    tb.innerHTML = `
+      <div class="nbi"><div class="nbdot"></div><div class="nblbl">${xe(tier)}</div></div>
+      <div class="nbpct">${pct}%</div>
+      <span class="nbedit" onclick="event.stopPropagation();renameTier('${xe(tier)}')">✏️</span>`;
+    tb.onclick = e => { if (e.target.classList.contains('nbedit')) return; toggleTier(tier); };
+    tn.appendChild(tb);
+    if (open) {
+      const pl = document.createElement('div');
+      pl.className = 'plist open';
+      for (const prod of (d.products[tier]||[])) {
+        const ps = prodStats(tier, prod);
+        const act = V.type==='product' && V.tier===tier && V.prod===prod;
+        const pb = document.createElement('button');
+        pb.className = 'pb' + (act?' on':'');
+        pb.innerHTML = `
+          <span class="pbn">${xe(prod)}</span>
+          <div class="pbbar"><div class="pbfill" style="width:${ps.pct}%"></div></div>
+          <span class="pbedit" onclick="event.stopPropagation();renameProd('${xe(tier)}','${xe(prod)}')">✏️</span>`;
+        pb.onclick = e => { if (e.target.classList.contains('pbedit')) return; goProd(tier,prod); };
+        pl.appendChild(pb);
+      }
+      tn.appendChild(pl);
+    }
+  }
 }
 
-function addLaunchDay() {
-  modal('New Launch Day', null, '', 'Add', 'var(--blue)', (val) => {
-    if (!val?.trim()) return;
-    const day = freshDay(val.trim());
-    G.launchDays.push(day);
-    G.activeId = day.id;
-    view = {type:'overview'};
-    save(); render(); toast('Launch day added: ' + val.trim());
-  });
+function renderMain() {
+  const m = document.getElementById('main');
+  if (!m) return;
+  if (V.type==='home')     { m.innerHTML = renderHome();     initCDs(); return; }
+  if (!ald()) return;
+  if (V.type==='overview') m.innerHTML = renderOv();
+  else if (V.type==='manage') m.innerHTML = renderMgr();
+  else if (V.type==='product') m.innerHTML = renderProd(V.tier, V.prod);
 }
 
-function editActiveLd() {
-  const d = ald();
-  modal('Edit Launch Day', null, d.name, 'Save', 'var(--blue)', (val) => {
-    if (!val?.trim()) return;
-    d.name = val.trim(); save(); render(); toast('Renamed');
-  }, `<button onclick="closeModal();setLdDate('${d.id}')" style="background:transparent;border:1px solid var(--bborder);color:var(--gmid);font-family:'Barlow',sans-serif;font-size:12px;padding:6px 14px;border-radius:4px;cursor:pointer;margin-bottom:16px;display:block">📅 Set launch date (for countdown)</button>` + (G.launchDays.length > 1
-    ? `<button onclick="closeModal();confirmDelLd('${d.id}')" style="background:transparent;border:1px solid #555;color:#f87171;font-family:'Barlow',sans-serif;font-size:12px;padding:6px 14px;border-radius:4px;cursor:pointer;margin-bottom:16px;display:block">🗑 Delete this launch day</button>`
-    : '') );
+function goHome()            { V={type:'home'};                  render(); }
+function goOv()              { V={type:'overview'};              render(); }
+function goProd(tier,prod)   { V={type:'product',tier,prod};     render(); }
+function goMgr()             { V={type:'manage'};                render(); }
+function switchLd(id)        { G.activeId=id; V={type:'overview'}; render(); }
+function toggleTier(tier) {
+  if (V.type==='product' && V.tier===tier) { goOv(); return; }
+  const p = (ald()?.products[tier]||[])[0];
+  p ? goProd(tier,p) : goOv();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════════════
+function faceoffRing(pct, sz=114) {
+  const cx=sz/2, cy=sz/2, R=sz*.40, sw=sz*.052, dot=sz*.072;
+  const hgap=sz*.09, hlen=sz*.13, hins=sz*.04;
+  const hx=cx+R-hins, ht=cy-hgap/2, hb=cy+hgap/2;
+  const cl=sz*.11, cg=dot*1.5;
+  const a0=-Math.PI/2, a1=a0+2*Math.PI*(pct/100);
+  const x1=cx+R*Math.cos(a0), y1=cy+R*Math.sin(a0);
+  const x2=cx+R*Math.cos(a1), y2=cy+R*Math.sin(a1);
+  const la=pct>50?1:0;
+  const arc = pct>=100
+    ? `M ${cx} ${cy-R} A ${R} ${R} 0 1 1 ${cx-.001} ${cy-R}`
+    : pct>0 ? `M ${x1} ${y1} A ${R} ${R} 0 ${la} 1 ${x2} ${y2}` : '';
+  const tc='#1C1C1C', ic='#2A2A2A', ac=pct>=100?'#4ade80':'#00A3E0';
+  const line = (x1,y1,x2,y2,sw) =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${ic}" stroke-width="${sw}" stroke-linecap="square"/>`;
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" fill="none">
+    <circle cx="${cx}" cy="${cy}" r="${R}" stroke="${tc}" stroke-width="${sw}"/>
+    ${arc?`<path d="${arc}" stroke="${ac}" stroke-width="${sw}" stroke-linecap="butt"/>`:''}
+    ${line(cx-R+hins,ht,cx-R+hins-hlen,ht,sw*.75)}
+    ${line(cx-R+hins,hb,cx-R+hins-hlen,hb,sw*.75)}
+    ${line(hx,ht,hx+hlen,ht,sw*.75)}
+    ${line(hx,hb,hx+hlen,hb,sw*.75)}
+    ${line(cx,cy-cg,cx,cy-cg-cl,sw*.7)}
+    ${line(cx,cy+cg,cx,cy+cg+cl,sw*.7)}
+    ${line(cx-cg,cy,cx-cg-cl,cy,sw*.7)}
+    ${line(cx+cg,cy,cx+cg+cl,cy,sw*.7)}
+    <circle cx="${cx}" cy="${cy}" r="${dot}" fill="${pct>0?ac:ic}" opacity="${pct>0?1:.3}"/>
+  </svg>`;
+}
+
+function cdHtml(ld) {
+  if (!ld.date) return `<span class="cdset" onclick="event.stopPropagation();editLd('${ld.id}')">Set date</span>`;
+  const days = Math.round((new Date(ld.date) - new Date()) / 86400000);
+  if (days < 0) return `<div class="cdpast">✓ ${Math.abs(days)}d ago</div>`;
+  return `<div class="cdnum">${days}</div><div class="cdlbl">days to go</div>`;
+}
+
+function renderHome() {
+  let cards = '';
+  for (const ld of G.launchDays) {
+    const as = allStats(ld);
+    let tierRows = '';
+    for (const tier of ld.tiers) {
+      const ts = tierStats(tier, ld);
+      tierRows += `<div class="ldtierrow">
+        <div class="ldtiername">${xe(tier)}</div>
+        <div class="ldtierbar"><div class="ldtierfill" style="width:${ts.pct}%"></div></div>
+        <div class="ldtierpct">${ts.pct}%</div>
+      </div>`;
+    }
+    cards += `<div class="ldcard" onclick="switchLd('${ld.id}');goOv()">
+      <div class="ldtop">
+        <div class="ldleft">
+          <div class="ldname">${xe(ld.name)}</div>
+          <div class="lddaterow">
+            <div class="lddate">${ld.date||'No date set'}</div>
+            <button class="ldeditbtn" onclick="event.stopPropagation();editLd('${ld.id}')">✏️</button>
+          </div>
+        </div>
+        <div class="ldcd" onclick="event.stopPropagation();editLd('${ld.id}')">${cdHtml(ld)}</div>
+      </div>
+      <div class="ldringrow">
+        <div class="fring">
+          ${faceoffRing(as.pct)}
+          <div class="fringlbl">
+            <div class="fringpct">${as.pct}%</div>
+            <div class="fringsub">${as.done}/${as.tot}</div>
+          </div>
+        </div>
+        <div class="ldtiers">${tierRows}</div>
+      </div>
+    </div>`;
+  }
+  cards += `<button class="addldbtn" onclick="addLd()">+ New Launch Day</button>`;
+  return `<div class="hwrap">
+    <div class="hhero">
+      <div class="hhtitle">TRUE LAUNCH TRACKER</div>
+      <div class="hhsub">Select a launch day below to view its asset checklist</div>
+    </div>
+    <div class="hgrid">${cards}</div>
+  </div>`;
+}
+
+function initCDs() {
+  clearInterval(window._cdt);
+  window._cdt = setInterval(() => { if (V.type==='home') renderMain(); }, 60000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LAUNCH DAY ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function addLd() {
+  modal('New Launch Day',
+    [['Name','text','ald-n','Launch day name…',''],['Date','date','ald-d','','']],
+    'Create','var(--blue)',() => {
+      const n = qv('ald-n'), dt = qv('ald-d');
+      if (!n) { toast('Enter a name'); return false; }
+      const day = freshDay(n, dt);
+      G.launchDays.push(day);
+      G.activeId = day.id;
+      save(); goOv(); toast('Launch day created');
+    });
+}
+
+function editLd(id) {
+  const ld = G.launchDays.find(d => d.id===id); if (!ld) return;
+  const delBtn = G.launchDays.length > 1
+    ? `<button class="mdel" onclick="closeModal();confirmDelLd('${id}')">Delete</button>`
+    : '';
+  modal('Edit Launch Day',
+    [['Name','text','eld-n','Name…',ld.name],['Date','date','eld-d','',ld.date||'']],
+    'Save','var(--blue)',() => {
+      const n = qv('eld-n'); if (!n) { toast('Enter a name'); return false; }
+      ld.name = n; ld.date = qv('eld-d');
+      save(); render(); toast('Updated');
+    }, delBtn);
 }
 
 function confirmDelLd(id) {
-  const d = G.launchDays.find(x=>x.id===id);
-  modal('Delete Launch Day', `Delete "${d?.name}"? All data for this launch day will be lost permanently.`, null, 'Delete', '#ef4444', () => {
-    G.launchDays = G.launchDays.filter(x=>x.id!==id);
-    if (G.activeId===id) G.activeId = G.launchDays[0].id;
-    save(); view={type:'overview'}; render(); toast('Launch day deleted');
-  });
+  const ld = G.launchDays.find(d => d.id===id);
+  modal('Delete Launch Day',
+    `Delete "${ld?.name||''}"? All data for this launch day will be permanently lost.`,
+    'Delete','#ef4444',() => {
+      G.launchDays = G.launchDays.filter(d => d.id!==id);
+      if (G.activeId===id) G.activeId = G.launchDays[0]?.id;
+      save(); goHome(); toast('Deleted');
+    });
 }
 
-// ── SIDEBAR ────────────────────────────────────────────
-function populateTierSelect() {
-  const sel=document.getElementById('np-tier'); if(!sel) return;
-  sel.innerHTML = ald().tiers.map(t=>`<option value="${x(t)}">${x(t)}</option>`).join('');
-}
-
-function renderSidebar() {
-  populateTierSelect();
-  const nav=document.getElementById('tier-nav');
-  if (!nav) return;
-  nav.innerHTML='';
-  const as=allStats();
-  const ovPct=document.getElementById('ov-pct'); if(ovPct) ovPct.textContent=as.pct+'%';
-  const ovBtn=document.getElementById('ov-btn'); if(ovBtn) ovBtn.classList.toggle('active',view.type==='overview');
-  const homeBtn=document.getElementById('home-btn'); if(homeBtn) homeBtn.classList.toggle('active',view.type==='home');
-  const d=ald(); if (!d) return;
-  for (const tier of d.tiers) {
-    const prods=d.products[tier]||[];
-    const ts=tierStats(tier);
-    const isOpen=(view.type==='product'||view.type==='manage')&&view.tier===tier;
-    const tb=document.createElement('button');
-    tb.className='tier-btn'+(isOpen?' active':'');
-    tb.innerHTML=`<div class="tier-inner"><div class="tier-dot"></div><div class="tier-name">${x(tier)}</div></div><div class="tier-pct">${ts.pct}%</div><button class="tedit" onclick="event.stopPropagation();renameTier('${x(tier)}')" title="Rename">✏️</button>`;
-    tb.onclick=(e)=>{if(e.target.classList.contains('tedit'))return;toggleTier(tier);};
-    nav.appendChild(tb);
-    const pl=document.createElement('div');
-    pl.className='prod-list'+(isOpen?' open':'');
-    for (const prod of prods) {
-      const ps=prodStats(tier,prod);
-      const isAct=view.type==='product'&&view.tier===tier&&view.prod===prod;
-      const pb=document.createElement('button');
-      pb.className='prod-btn'+(isAct?' active':'');
-      pb.innerHTML=`<span class="pname">${x(prod)}</span><div class="pright"><div class="pmbar"><div class="pmfill" style="width:${ps.pct}%"></div></div><button class="pedit" onclick="event.stopPropagation();renameProd('${x(tier)}','${x(prod)}')" title="Rename">✏️</button></div>`;
-      pb.onclick=(e)=>{if(e.target.classList.contains('pedit'))return;showProd(tier,prod);};
-      pl.appendChild(pb);
-    }
-    nav.appendChild(pl);
-  }
-}
-
-// ── VIEWS ──────────────────────────────────────────────
-function showHome(){view={type:'home'};render();}
-function showOverview(){view={type:'overview'};render();}
-function showProd(tier,prod){view={type:'product',tier,prod};render();}
-function showManage(){view={type:'manage'};render();}
-function toggleTier(tier){
-  if(view.type==='product'&&view.tier===tier){showOverview();return;}
-  const p=(ald().products[tier]||[])[0];
-  if(p) showProd(tier,p); else{view={type:'overview'};render();}
-}
-function render(){renderLdDropdown();renderSidebar();renderMain();}
-
-function renderMain(){
-  const m=document.getElementById('main');
-  if (!m) return;
-  if(view.type==='home') { m.innerHTML=renderHome(); initHomeCountdowns(); return; }
-  if (!ald()) return;
-  if(view.type==='overview') m.innerHTML=renderOv();
-  else if(view.type==='manage') m.innerHTML=renderManage();
-  else m.innerHTML=renderProd(view.tier,view.prod);
-}
-
-// ── OVERVIEW ───────────────────────────────────────────
-function renderOv(){
-  const d=ald(); const as=allStats();
-  let cards='';
+// ═══════════════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════════════
+function renderOv() {
+  const d = ald(); if (!d) return '';
+  const as = allStats();
+  let cards = '';
   for (const tier of d.tiers) for (const prod of (d.products[tier]||[])) {
-    const ps=prodStats(tier,prod);
-    cards+=`<div class="ov-card" onclick="showProd('${x(tier)}','${x(prod)}')">
-      <div class="ov-ct">TIER ${d.tiers.indexOf(tier)+1} — ${x(tier).toUpperCase()}</div>
-      <div class="ov-body">
-        <div class="ov-name">${x(prod)}</div>
-        <div class="ov-bar"><div class="ov-fill" style="width:${ps.pct}%"></div></div>
-        <div class="ov-st"><div class="ov-cnt">${ps.done} of ${ps.tot} complete</div><div class="ov-pct">${ps.pct}%</div></div>
-        <div class="ov-pills">
+    const ps = prodStats(tier,prod);
+    cards += `<div class="ovcard" onclick="goProd('${xe(tier)}','${xe(prod)}')">
+      <div class="ovtop">TIER ${d.tiers.indexOf(tier)+1} — ${xe(tier).toUpperCase()}</div>
+      <div class="ovbody">
+        <div class="ovname">${xe(prod)}</div>
+        <div class="ovbar"><div class="ovfill" style="width:${ps.pct}%"></div></div>
+        <div class="ovrow">
+          <div class="ovcnt">${ps.done} of ${ps.tot} complete</div>
+          <div class="ovpct">${ps.pct}%</div>
+        </div>
+        <div class="ovpills">
           ${ps.done>0?`<span class="pill c">${ps.done} done</span>`:''}
           ${ps.ip>0?`<span class="pill ip">${ps.ip} in progress</span>`:''}
           ${ps.ns>0?`<span class="pill ns">${ps.ns} not started</span>`:''}
@@ -764,553 +813,421 @@ function renderOv(){
       </div>
     </div>`;
   }
-  return `<div class="ch" style="background:var(--black)">
-    <div><div class="ch-sub">${x(d.name)}</div><div class="ch-name">Launch Overview</div></div>
-    <div class="sbar"><div class="stat-b"><div class="stat-n">${as.done}</div><div class="stat-l">Complete</div></div>
-    <div class="stat-d"></div><div class="stat-b"><div class="stat-n">${as.tot}</div><div class="stat-l">Total</div></div>
-    <div class="stat-d"></div>${ring(as.pct)}</div>
-  </div><div class="ov-grid">${cards}</div>`;
+  return ch(xe(d.name),'All Products',sbar(as)) + `<div class="ovgrid">${cards}</div>`;
 }
 
-// ── MANAGE ─────────────────────────────────────────────
-function renderManage(){
-  const d=ald();
-  let cards='';
-  for (const tier of d.tiers) {
-    const prods=d.products[tier]||[];
-    const chips=prods.map(p=>`<div class="pchip"><span class="pchip-n">${x(p)}</span><button class="pchip-d" onclick="deleteProd('${x(tier)}','${x(p)}')">×</button></div>`).join('');
-    cards+=`<div class="tmc"><div class="tmc-h"><div class="tmc-n">${x(tier)}</div>
-      <div class="tmc-a"><button class="tmc-btn" onclick="renameTier('${x(tier)}')">✏️ Rename</button><button class="tmc-btn del" onclick="confirmDelTier('${x(tier)}')">🗑 Delete</button></div>
-    </div><div class="tmc-prods">${chips||'<span style="font-size:12px;color:var(--gdark);font-style:italic">No products yet</span>'}</div></div>`;
-  }
-  // Status options section
-  const COLOR_OPTIONS = [
-    {cls:'not-started', label:'Grey'},
-    {cls:'in-progress', label:'Blue'},
-    {cls:'complete',    label:'Green'},
-    {cls:'na',          label:'Dim'},
-    {cls:'custom',      label:'Purple'},
-  ];
-  const statusItems = getStatuses().map((st,i) => {
-    const opts = COLOR_OPTIONS.map(o=>`<option value="${o.cls}"${o.cls===st.cls?' selected':''}>${o.label}</option>`).join('');
-    const pillStyle = `class="st-pill ss ${st.cls}"`;
-    return `<div class="st-item">
-      <span ${pillStyle}>${x(st.label)}</span>
-      <select class="st-cls-sel" onchange="setStatusCls(${i},this.value)" title="Color">${opts}</select>
-      ${i>1?`<button class="st-del" onclick="deleteStatus(${i})" title="Remove">×</button>`:'<span style="width:28px"></span>'}
+// ═══════════════════════════════════════════════════════════════
+// PRODUCT CHECKLIST
+// ═══════════════════════════════════════════════════════════════
+function renderProd(tier, prod) {
+  const d = ald(); if (!d) return '';
+  const ps = prodStats(tier,prod);
+  let cats = '';
+  for (const sec of gsecs(tier)) {
+    let sd=0;
+    sec.items.forEach(it => { if (gis(tier,prod,it.id).status==='Complete') sd++; });
+    let rows = `<div class="irow hrow">
+      <div class="icol">Asset / Deliverable</div>
+      <div class="icol">Notes / Specs</div>
+      <div class="icol">Status</div>
+      <div class="icol">Owner</div>
+      <div class="icol">Due Date</div>
+      <div class="icol">Comments</div>
+      <div class="icol"></div>
     </div>`;
-  }).join('');
-
-  return `<div class="ch" style="background:var(--black)"><div><div class="ch-sub">Settings — ${x(d.name)}</div><div class="ch-name">Manage Tiers &amp; Products</div></div></div>
-  <div class="mgr-panel">
-    <div class="section-title">Tiers &amp; Products</div>
-    ${cards}
-    <div class="add-tier-row"><input class="ati" id="ati" placeholder="New tier name…" onkeydown="if(event.key==='Enter')addTier()"/><button class="atb" onclick="addTier()">+ Add Tier</button></div>
-    <div class="section-title">Status Options</div>
-    <p style="font-size:12px;color:var(--gmid);margin-bottom:12px">These options appear in every status dropdown. The first two (Not Started, In Progress) cannot be deleted.</p>
-    <div class="st-list" id="st-list">${statusItems}</div>
-    <div class="st-add-row">
-      <input class="st-inp" id="st-inp" placeholder="New status option…" onkeydown="if(event.key==='Enter')addStatus()"/>
-      <button class="st-add-btn" onclick="addStatus()">+ Add Status</button>
-    </div>
-  </div>`;
-}
-
-// ── PRODUCT VIEW ───────────────────────────────────────
-function renderProd(tier, prod){
-  const d=ald(); const ps=prodStats(tier,prod); const secs=getSecs(tier);
-  let cats='';
-  for (const sec of secs) {
-    let done=0; sec.items.forEach(it=>{if(getIS(tier,prod,it.id).status==='Complete')done++;});
-    let rows=`<div class="irow hrow"><div class="icol">Asset / Deliverable</div><div class="icol">Notes / Specs</div><div class="icol">Status</div><div class="icol">Owner</div><div class="icol">Due Date</div><div class="icol">Comments</div><div class="icol"></div></div>`;
-    for (const item of sec.items){
-      const dd=getIS(tier,prod,item.id); const sc=sCls(dd.status);
-      rows+=`<div class="irow">
-        <div class="fcell fname"><input type="text" placeholder="Deliverable name…" value="${x(item.name)}" data-tier="${x(tier)}" data-sec="${sec.id}" data-item="${item.id}" data-f="name" onchange="onMeta(this)"/></div>
-        <div class="fcell fnotes"><input type="text" placeholder="Notes / specs…" value="${x(item.notes)}" data-tier="${x(tier)}" data-sec="${sec.id}" data-item="${item.id}" data-f="notes" onchange="onMeta(this)"/></div>
-        <div><select class="ss ${sc}" data-t="${x(tier)}" data-p="${x(prod)}" data-i="${item.id}" onchange="onSC(this)">
-          ${statusLabels().map(s=>`<option value="${s}"${s===dd.status?' selected':''}>${s}</option>`).join('')}
+    for (const item of sec.items) {
+      const dd = gis(tier,prod,item.id);
+      const sc = scls(dd.status);
+      rows += `<div class="irow">
+        <div class="fc fcname"><input type="text" value="${xe(item.name)}" placeholder="Deliverable…"
+          data-tier="${xe(tier)}" data-sec="${sec.id}" data-item="${item.id}" data-f="name" onchange="onMeta(this)"/></div>
+        <div class="fc fcnotes"><input type="text" value="${xe(item.notes)}" placeholder="Notes…"
+          data-tier="${xe(tier)}" data-sec="${sec.id}" data-item="${item.id}" data-f="notes" onchange="onMeta(this)"/></div>
+        <div><select class="ss ${sc}" data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" onchange="onSC(this)">
+          ${gstatuses().map(s => `<option value="${xe(s.label)}"${s.label===dd.status?' selected':''}>${xe(s.label)}</option>`).join('')}
         </select></div>
-        <div class="fcell"><input type="text" placeholder="—" value="${x(dd.owner)}" data-t="${x(tier)}" data-p="${x(prod)}" data-i="${item.id}" data-f="owner" onchange="onFC(this)"/></div>
-        <div class="fcell"><input type="text" placeholder="—" value="${x(dd.due)}" data-t="${x(tier)}" data-p="${x(prod)}" data-i="${item.id}" data-f="due" onchange="onFC(this)"/></div>
-        <div class="fcell fcomment"><input type="text" placeholder="Add comment…" value="${x(dd.comment||'')}" data-t="${x(tier)}" data-p="${x(prod)}" data-i="${item.id}" data-f="comment" onchange="onFC(this)"/><span class="cmt-indicator"></span></div>
-        <div><button class="dbtn" onclick="confirmDelItem('${x(tier)}','${sec.id}','${item.id}','${x(item.name)}')" title="Remove">×</button></div>
+        <div class="fc"><input type="text" value="${xe(dd.owner)}" placeholder="—"
+          data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="owner" onchange="onFC(this)"/></div>
+        <div class="fc"><input type="text" value="${xe(dd.due)}" placeholder="—"
+          data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="due" onchange="onFC(this)"/></div>
+        <div class="fc fccmt"><input type="text" value="${xe(dd.comment||'')}" placeholder="Add comment…"
+          data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="comment" onchange="onFC(this)"/></div>
+        <div><button class="delbtn"
+          onclick="confirmDelItem('${xe(tier)}','${sec.id}','${item.id}','${xe(item.name)}')"
+          title="Remove">×</button></div>
       </div>`;
     }
-    rows+=`<div class="ai-row">
-      <input class="ai-n" id="ain-${sec.id}" placeholder="+ Add deliverable…" onkeydown="if(event.key==='Enter')addItem('${x(tier)}','${sec.id}')"/>
-      <input class="ai-t" id="ait-${sec.id}" placeholder="Notes / specs…" onkeydown="if(event.key==='Enter')addItem('${x(tier)}','${sec.id}')"/>
-      <button class="ai-btn" onclick="addItem('${x(tier)}','${sec.id}')">Add</button>
+    rows += `<div class="airow">
+      <input class="ainput" id="ain-${sec.id}" placeholder="+ Add deliverable…"
+        onkeydown="if(event.key==='Enter')addItem('${xe(tier)}','${sec.id}')"/>
+      <input class="ainotes" id="ait-${sec.id}" placeholder="Notes…"
+        onkeydown="if(event.key==='Enter')addItem('${xe(tier)}','${sec.id}')"/>
+      <button class="aibtn" onclick="addItem('${xe(tier)}','${sec.id}')">Add</button>
     </div>`;
-    cats+=`<div class="cat-block" id="cb-${sec.id}">
-      <div class="cat-hdr">
-        <button class="cat-tog" onclick="toggleCat('${sec.id}')">
-          <div class="cat-ico">${sec.icon}</div><div class="cat-ttl">${x(sec.name)}</div>
-          <div class="cat-prg" id="cp-${sec.id}">${done}/${sec.items.length}</div><div class="cat-chv">▼</div>
+    cats += `<div class="catblock" id="cb-${sec.id}">
+      <div class="cathdr">
+        <button class="cattog" onclick="toggleCat('${sec.id}')">
+          <div class="catic">${sec.icon}</div>
+          <div class="cattl">${xe(sec.name)}</div>
+          <div class="catprg" id="cp-${sec.id}">${sd}/${sec.items.length}</div>
+          <div class="catchv">▼</div>
         </button>
-        <div class="cat-acts">
-          <button class="cact" onclick="renameSection('${x(tier)}','${sec.id}','${x(sec.name)}')">✏️</button>
-          <button class="cact del" onclick="confirmDelSec('${x(tier)}','${sec.id}','${x(sec.name)}')">🗑</button>
+        <div class="catacts">
+          <button class="cact" onclick="renameSec('${xe(tier)}','${sec.id}','${xe(sec.name)}')">✏️</button>
+          <button class="cact del" onclick="confirmDelSec('${xe(tier)}','${sec.id}','${xe(sec.name)}')">🗑</button>
         </div>
       </div>
       <div class="itbl">${rows}</div>
     </div>`;
   }
-  cats+=`<div class="as-row"><input class="as-inp" id="as-inp" placeholder="+ Add new section…" onkeydown="if(event.key==='Enter')addSection('${x(tier)}')"/><button class="as-btn" onclick="addSection('${x(tier)}')">Add Section</button></div>`;
-  return `<div class="ch"><div><div class="ch-sub">TIER ${d.tiers.indexOf(tier)+1} — ${x(tier).toUpperCase()}</div><div class="ch-name">${x(prod)}</div></div>
-    <div class="sbar" id="sbar">${sbarH(ps)}</div></div>
-  <div class="ca">${cats}</div>`;
+  cats += `<div class="asrow">
+    <input class="asinp" id="as-inp" placeholder="+ Add new section…"
+      onkeydown="if(event.key==='Enter')addSec('${xe(tier)}')"/>
+    <button class="asbtn" onclick="addSec('${xe(tier)}')">Add Section</button>
+  </div>`;
+  return ch('TIER '+(ald().tiers.indexOf(tier)+1)+' — '+xe(tier).toUpperCase(), xe(prod),
+    `<div class="sbar" id="sbar">${sbar(ps)}</div>`) +
+    `<div class="ca">${cats}</div>`;
 }
 
-function sbarH(ps){return `<div class="stat-b"><div class="stat-n">${ps.done}</div><div class="stat-l">Complete</div></div><div class="stat-d"></div><div class="stat-b"><div class="stat-n">${ps.ip}</div><div class="stat-l">In Progress</div></div><div class="stat-d"></div><div class="stat-b"><div class="stat-n">${ps.tot}</div><div class="stat-l">Total</div></div><div class="stat-d"></div>${ring(ps.pct)}`;}
-function ring(pct){const r=26,c=2*Math.PI*r,off=c-(pct/100)*c;return `<div class="ring-w"><svg width="60" height="60" viewBox="0 0 64 64"><circle class="r-bg" cx="32" cy="32" r="${r}"/><circle class="r-fill" cx="32" cy="32" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg><div class="r-lbl">${pct}%</div></div>`;}
-
-// ── INTERACTIONS ───────────────────────────────────────
-
-// ── HOME PAGE ────────────────────────────────────────────────
-function faceoffRing(pct, size=120) {
-  // Matches reference: outer ring + 2 hash pairs left/right + centre cross + centre dot
-  // Progress arc replaces/overlays the outer ring in TRUE Blue
-  const cx = size / 2, cy = size / 2;
-
-  // ── dimensions (all proportional to size) ──
-  const sw   = size * 0.052;   // main stroke width
-  const R    = size * 0.40;    // outer ring radius (track)
-  const dot  = size * 0.072;   // centre dot radius
-
-  // Hash marks: two pairs, left side and right side, sitting just outside ring
-  // Each pair: upper hash and lower hash, extending outward from ring edge
-  const hashGap    = size * 0.09;   // vertical gap between the two hashes in a pair
-  const hashLen    = size * 0.13;   // how far each hash extends outward
-  const hashInset  = size * 0.04;   // how far hash starts inside ring edge
-  const hashX      = cx + R - hashInset; // x of right-side hash start (at ring)
-  const hTop       = cy - hashGap / 2;
-  const hBot       = cy + hashGap / 2;
-
-  // Centre cross lines (4 short lines pointing to centre dot, leaving a gap)
-  const crossLen = size * 0.11;
-  const crossGap = dot * 1.5; // gap around centre dot
-
-  // Progress arc — clockwise from top
-  const startA = -Math.PI / 2;
-  const endA   = startA + 2 * Math.PI * (pct / 100);
-  const ax1 = cx + R * Math.cos(startA), ay1 = cy + R * Math.sin(startA);
-  const ax2 = cx + R * Math.cos(endA),   ay2 = cy + R * Math.sin(endA);
-  const largeArc = pct > 50 ? 1 : 0;
-  const arcD = pct >= 100
-    ? `M ${cx} ${cy - R} A ${R} ${R} 0 1 1 ${cx - 0.001} ${cy - R}`
-    : pct > 0
-      ? `M ${ax1} ${ay1} A ${R} ${R} 0 ${largeArc} 1 ${ax2} ${ay2}`
-      : '';
-
-  const trackCol    = '#1C1C1C';
-  const staticCol   = '#2A2A2A';  // ring + details when no progress
-  const progressCol = '#00A3E0';
-  const doneCol     = '#4ade80';
-  const activeCol   = pct >= 100 ? doneCol : progressCol;
-
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" fill="none">
-
-    <!-- ── OUTER RING TRACK ── -->
-    <circle cx="${cx}" cy="${cy}" r="${R}"
-      stroke="${trackCol}" stroke-width="${sw}"/>
-
-    <!-- ── PROGRESS ARC (overlays ring) ── -->
-    ${arcD ? `<path d="${arcD}"
-      stroke="${activeCol}" stroke-width="${sw}"
-      stroke-linecap="butt" fill="none"/>` : ''}
-
-    <!-- ── LEFT HASH PAIR (two ticks, extending left from ring) ── -->
-    <!-- upper left hash -->
-    <line x1="${cx - R + hashInset}" y1="${hTop}"
-          x2="${cx - R + hashInset - hashLen}" y2="${hTop}"
-          stroke="${staticCol}" stroke-width="${sw * 0.75}" stroke-linecap="square"/>
-    <!-- lower left hash -->
-    <line x1="${cx - R + hashInset}" y1="${hBot}"
-          x2="${cx - R + hashInset - hashLen}" y2="${hBot}"
-          stroke="${staticCol}" stroke-width="${sw * 0.75}" stroke-linecap="square"/>
-
-    <!-- ── RIGHT HASH PAIR ── -->
-    <!-- upper right hash -->
-    <line x1="${hashX}" y1="${hTop}"
-          x2="${hashX + hashLen}" y2="${hTop}"
-          stroke="${staticCol}" stroke-width="${sw * 0.75}" stroke-linecap="square"/>
-    <!-- lower right hash -->
-    <line x1="${hashX}" y1="${hBot}"
-          x2="${hashX + hashLen}" y2="${hBot}"
-          stroke="${staticCol}" stroke-width="${sw * 0.75}" stroke-linecap="square"/>
-
-    <!-- ── CENTRE CROSS (4 arms, stop short of dot) ── -->
-    <!-- top arm -->
-    <line x1="${cx}" y1="${cy - crossGap}"
-          x2="${cx}" y2="${cy - crossGap - crossLen}"
-          stroke="${staticCol}" stroke-width="${sw * 0.7}" stroke-linecap="square"/>
-    <!-- bottom arm -->
-    <line x1="${cx}" y1="${cy + crossGap}"
-          x2="${cx}" y2="${cy + crossGap + crossLen}"
-          stroke="${staticCol}" stroke-width="${sw * 0.7}" stroke-linecap="square"/>
-    <!-- left arm -->
-    <line x1="${cx - crossGap}" y1="${cy}"
-          x2="${cx - crossGap - crossLen}" y2="${cy}"
-          stroke="${staticCol}" stroke-width="${sw * 0.7}" stroke-linecap="square"/>
-    <!-- right arm -->
-    <line x1="${cx + crossGap}" y1="${cy}"
-          x2="${cx + crossGap + crossLen}" y2="${cy}"
-          stroke="${staticCol}" stroke-width="${sw * 0.7}" stroke-linecap="square"/>
-
-    <!-- ── CENTRE DOT ── -->
-    <circle cx="${cx}" cy="${cy}" r="${dot}"
-      fill="${pct > 0 ? activeCol : staticCol}"
-      opacity="${pct > 0 ? '1' : '0.3'}"/>
-
-  </svg>`;
-}
-
-function countdown(dateStr) {
-  if (!dateStr) return null;
-  const target = new Date(dateStr);
-  if (isNaN(target)) return null;
-  const now = new Date();
-  const diff = target - now;
-  if (diff <= 0) return {past: true, days: Math.abs(Math.floor(diff/(1000*60*60*24)))};
-  return {past: false, days: Math.floor(diff/(1000*60*60*24))};
-}
-
-function renderHome() {
-
-
-  let cards = '';
-  for (const ld of G.launchDays) {
-    const prevActive = G.activeId;
-    G.activeId = ld.id;
-    const d = ald();
-    if (!d) { G.activeId = prevActive; continue; }
-    const as = allStats();
-    G.activeId = prevActive;
-
-    // Tier bars
-    G.activeId = ld.id;
-    let tierRows = '';
-    for (const tier of d.tiers) {
-      const ts = tierStats(tier);
-      tierRows += `<div class="ld-tier-row">
-        <div class="ld-tier-name">${x(tier)}</div>
-        <div class="ld-tier-bar"><div class="ld-tier-fill" style="width:${ts.pct}%"></div></div>
-        <div class="ld-tier-pct">${ts.pct}%</div>
-      </div>`;
-    }
-    G.activeId = prevActive;
-
-    const cd = countdown(ld.date);
-    const cdHTML = cd
-      ? cd.past
-        ? `<div class="countdown-past">✓ ${cd.days}d ago</div>`
-        : `<div class="countdown-num">${cd.days}</div><div class="countdown-lbl">days to go</div>`
-      : `<button class="home-btn" onclick="event.stopPropagation();setLdDate('${ld.id}')">Set date</button>`;
-
-    cards += `<div class="ld-home-card" onclick="switchLd('${ld.id}');showOverview()">
-      <div class="ld-home-card-top">
-        <div style="flex:1;min-width:0">
-          <div class="ld-home-name">${x(ld.name)}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-            <div class="ld-home-date">${ld.date || '<span style=\'color:var(--gdark);font-style:italic\'>No date set</span>'}</div>
-            <button class="ld-card-edit-btn" onclick="event.stopPropagation();editLdCard('${ld.id}')" title="Edit">✏️</button>
-          </div>
+// ═══════════════════════════════════════════════════════════════
+// MANAGE
+// ═══════════════════════════════════════════════════════════════
+function renderMgr() {
+  const d = ald(); if (!d) return '';
+  let tiers = '';
+  for (const tier of d.tiers) {
+    const chips = (d.products[tier]||[]).map(p =>
+      `<div class="pchip"><span class="pchipn">${xe(p)}</span>
+       <button class="pchipd" onclick="confirmDelProd('${xe(tier)}','${xe(p)}')">×</button></div>`
+    ).join('') || '<span style="font-size:12px;color:var(--g1);font-style:italic">No products yet</span>';
+    tiers += `<div class="tmc">
+      <div class="tmch">
+        <div class="tmcname">${xe(tier)}</div>
+        <div class="tmcacts">
+          <button class="tmcbtn" onclick="renameTier('${xe(tier)}')">✏️ Rename</button>
+          <button class="tmcbtn del" onclick="confirmDelTier('${xe(tier)}')">🗑 Delete</button>
         </div>
-        <div class="ld-home-countdown" onclick="event.stopPropagation();setLdDate('${ld.id}')" title="Click to edit date" style="cursor:pointer">${cdHTML}</div>
       </div>
-      <div class="ld-home-ring-row">
-        <div class="face-ring" id="fring-${ld.id}">
-          ${faceoffRing(as.pct)}
-          <div class="face-ring-lbl">
-            <div class="face-ring-pct">${as.pct}%</div>
-            <div class="face-ring-sub">${as.done}/${as.tot}</div>
-          </div>
-        </div>
-        <div class="ld-home-tiers">${tierRows}</div>
-      </div>
+      <div class="tmcprods">${chips}</div>
     </div>`;
   }
-
-  return '<div class="home-wrap"><div class="home-cards">' + cards + '</div></div>';
+  const stRows = gstatuses().map((st,i) => `<div class="stitem">
+    <span class="stpill ss ${st.cls}">${xe(st.label)}</span>
+    <select class="stclssel" onchange="setStCls(${i},this.value)">
+      ${CLS_OPTIONS.map(o=>`<option value="${o.cls}"${o.cls===st.cls?' selected':''}>${o.label}</option>`).join('')}
+    </select>
+    ${i>1?`<button class="stdel" onclick="delStatus(${i})">×</button>`:'<span style="width:28px"></span>'}
+  </div>`).join('');
+  return ch('Settings','Manage Tiers &amp; Products','') + `<div class="mgrwrap">
+    <div class="sechdr">Tiers &amp; Products</div>
+    ${tiers}
+    <div class="addrow">
+      <input class="addinp" id="add-tier-inp" placeholder="New tier name…"
+        onkeydown="if(event.key==='Enter')addTier()"/>
+      <button class="addbtn" onclick="addTier()">+ Add Tier</button>
+    </div>
+    <div class="sechdr" style="margin-top:28px">Status Options</div>
+    <p style="font-size:12px;color:var(--g2);margin-bottom:12px">Customise the status options in every checklist dropdown.</p>
+    <div class="stlist">${stRows}</div>
+    <div class="addrow">
+      <input class="addinp" id="add-st-inp" placeholder="New status option…"
+        onkeydown="if(event.key==='Enter')addStatus()"/>
+      <button class="addbtn" onclick="addStatus()">+ Add Status</button>
+    </div>
+  </div>`;
 }
 
-function initHomeCountdowns() {
-  // Live countdown ticker — updates every minute
-  clearInterval(window._cdTimer);
-  window._cdTimer = setInterval(() => {
-    for (const ld of G.launchDays) {
-      const cd = countdown(ld.date);
-      if (!cd || cd.past) continue;
-      // Just re-render the home page to update — only if we're still on it
-      if (view.type === 'home') renderMain();
-    }
-  }, 60000);
+// ═══════════════════════════════════════════════════════════════
+// SHARED RENDER HELPERS
+// ═══════════════════════════════════════════════════════════════
+function ch(eye, name, right) {
+  return `<div class="ch">
+    <div><div class="ch-eye">${eye}</div><div class="ch-name">${name}</div></div>
+    ${right}
+  </div>`;
+}
+function sbar(ps) {
+  const r=26, c=2*Math.PI*r, off=c-(ps.pct/100)*c;
+  return `<div class="sbar">
+    <div class="stb"><div class="stn">${ps.done}</div><div class="stl">Complete</div></div>
+    <div class="stsp"></div>
+    <div class="stb"><div class="stn">${ps.ip||0}</div><div class="stl">In Progress</div></div>
+    <div class="stsp"></div>
+    <div class="stb"><div class="stn">${ps.tot}</div><div class="stl">Total</div></div>
+    <div class="stsp"></div>
+    <div class="rw">
+      <svg width="60" height="60" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
+        <circle cx="32" cy="32" r="${r}" fill="none" stroke="#222" stroke-width="5"/>
+        <circle cx="32" cy="32" r="${r}" fill="none" stroke="#00A3E0" stroke-width="5"
+          stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
+          style="transition:stroke-dashoffset .5s"/>
+      </svg>
+      <div class="rl"><div class="rpct">${ps.pct}%</div></div>
+    </div>
+  </div>`;
 }
 
-
-
-
-function editLdCard(ldId) {
-  const ld = G.launchDays.find(d => d.id === ldId);
-  if (!ld) return;
-  const delBtn = G.launchDays.length > 1
-    ? '<button onclick="closeModal();confirmDelLd(\'' + ldId + '\')" style="background:transparent;border:1px solid #555;color:#f87171;font-family:Barlow,sans-serif;font-size:13px;padding:8px 16px;border-radius:4px;cursor:pointer;margin-right:auto">Delete</button>'
-    : '';
-  document.getElementById('mc').innerHTML =
-    '<div class="mbk" onclick="if(event.target===this)closeModal()">' +
-    '<div class="modal">' +
-      '<div class="m-ttl">Edit Launch Day</div>' +
-      '<div style="margin-bottom:6px;font-family:DM Mono,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gdark)">Name</div>' +
-      '<input id="elc-name" class="m-inp" type="text" value="' + x(ld.name) + '" placeholder="Launch day name…" style="margin-bottom:14px"/>' +
-      '<div style="margin-bottom:6px;font-family:DM Mono,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gdark)">Launch Date</div>' +
-      '<input id="elc-date" class="m-inp" type="date" value="' + (ld.date||'') + '" style="margin-bottom:6px;color-scheme:dark"/>' +
-      '<div style="font-size:11px;color:var(--gdark);margin-bottom:18px">Used for the countdown on the home page.</div>' +
-      '<div class="m-acts">' +
-        '<button class="m-cancel" onclick="closeModal()">Cancel</button>' +
-        delBtn +
-        '<button class="m-ok" style="background:var(--blue)" onclick="saveEditLdCard(\'' + ldId + '\')">Save</button>' +
-      '</div>' +
-    '</div>' +
-    '</div>';
-  document.getElementById('elc-name').focus();
+// ═══════════════════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════════════════
+function onSC(sel) {
+  const {t,p,i} = sel.dataset;
+  sis(t,p,i,'status',sel.value);
+  sel.className = 'ss ' + scls(sel.value);
+  refreshStats(t,p);
+  toast('Saved ✓');
 }
-
-function saveEditLdCard(ldId) {
-  const ld = G.launchDays.find(d => d.id === ldId);
-  if (!ld) return;
-  const name = document.getElementById('elc-name')?.value.trim();
-  const date = document.getElementById('elc-date')?.value.trim();
-  if (name) ld.name = name;
-  ld.date = date || '';
-  closeModal();
-  save();
-  renderMain();
-  toast('Launch day updated');
+function onFC(inp) {
+  const {t,p,i,f} = inp.dataset;
+  sis(t,p,i,f,inp.value);
 }
-
-function setLdDate(ldId) {
-  const ld = G.launchDays.find(d => d.id === ldId);
-  if (!ld) return;
-  modal('Set Launch Date', null, ld.date || '', 'Save', 'var(--blue)', (val) => {
-    if (!val?.trim()) return;
-    ld.date = val.trim();
-    save(); renderMain(); toast('Date set');
-  }, '<div style="font-size:11px;color:var(--gdark);margin-bottom:12px">Format: YYYY-MM-DD (e.g. 2026-05-22)</div>');
+function onMeta(inp) {
+  const {tier,sec,item,f} = inp.dataset;
+  const section = gsecs(tier).find(s => s.id===sec); if (!section) return;
+  const it = section.items.find(x => x.id===item); if (!it) return;
+  it[f] = inp.value; save();
 }
-
-function onSC(sel){const{t,p,i}=sel.dataset;setIS(t,p,i,'status',sel.value);sel.className='ss '+sCls(sel.value);refreshStats(t,p);toast('Saved ✓');}
-function onFC(inp){const{t,p,i,f}=inp.dataset;setIS(t,p,i,f,inp.value);}
-function onMeta(inp){
-  const {tier,sec,item,f}=inp.dataset;
-  const section=getSecs(tier).find(s=>s.id===sec); if(!section) return;
-  const it=section.items.find(i=>i.id===item); if(!it) return;
-  it[f]=inp.value; save();
-}
-function refreshStats(tier,prod){
-  renderLdDropdown(); renderSidebar();
-  const ps=prodStats(tier,prod);
-  const sb=document.getElementById('sbar'); if(sb) sb.innerHTML=sbarH(ps);
-  for(const sec of getSecs(tier)){
-    let d=0; sec.items.forEach(it=>{if(getIS(tier,prod,it.id).status==='Complete')d++;});
-    const el=document.getElementById('cp-'+sec.id); if(el) el.textContent=`${d}/${sec.items.length}`;
+function refreshStats(tier,prod) {
+  renderSB();
+  const ps = prodStats(tier,prod);
+  const sb = document.getElementById('sbar');
+  if (sb) sb.outerHTML = sbar(ps);
+  for (const sec of gsecs(tier)) {
+    let d=0;
+    sec.items.forEach(it => { if (gis(tier,prod,it.id).status==='Complete') d++; });
+    const el = document.getElementById('cp-'+sec.id);
+    if (el) el.textContent = `${d}/${sec.items.length}`;
   }
 }
-function toggleCat(id){document.getElementById('cb-'+id)?.classList.toggle('collapsed');}
+function toggleCat(id) { document.getElementById('cb-'+id)?.classList.toggle('collapsed'); }
 
-// ── SECTION ACTIONS ────────────────────────────────────
-function addSection(tier){
-  const inp=document.getElementById('as-inp'); const name=inp?.value.trim();
-  if(!name){toast('Enter a section name');return;}
-  const d=ald(); if(!d.sections[tier]) d.sections[tier]=[];
-  d.sections[tier].push({id:uid(),name,icon:ICONS[getSecs(tier).length%ICONS.length],items:[]});
-  save(); renderMain(); toast('Section added'); document.getElementById('as-inp')?.focus();
+// ═══════════════════════════════════════════════════════════════
+// SECTION ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function addSec(tier) {
+  const n = document.getElementById('as-inp')?.value.trim();
+  if (!n) { toast('Enter a section name'); return; }
+  const d = ald(); if (!d) return;
+  if (!d.sections[tier]) d.sections[tier] = [];
+  d.sections[tier].push({id:uid(), name:n, icon:ICONS[gsecs(tier).length%ICONS.length], items:[]});
+  save(); renderMain(); toast('Section added');
+  document.getElementById('as-inp')?.focus();
 }
-function renameSection(tier,secId,cur){modal('Rename Section',null,cur,'Save','var(--blue)',(val)=>{if(!val?.trim())return;const sec=getSecs(tier).find(s=>s.id===secId);if(sec){sec.name=val.trim();save();renderMain();toast('Renamed');}});}
-function confirmDelSec(tier,secId,name){
-  const sec=getSecs(tier).find(s=>s.id===secId); const n=sec?.items.length||0;
-  modal('Delete Section',`Delete "${name}"${n>0?` and its ${n} item${n!==1?'s':''}`:''}? Cannot be undone.`,null,'Delete','#ef4444',()=>{
-    const d=ald(); d.sections[tier]=d.sections[tier].filter(s=>s.id!==secId); save(); render(); toast('Section deleted');
+function renameSec(tier,secId,cur) {
+  modal('Rename Section',[['Name','text','rs-n','Name…',cur]],'Save','var(--blue)',() => {
+    const n = qv('rs-n'); if (!n) return false;
+    const sec = gsecs(tier).find(s => s.id===secId); if (!sec) return;
+    sec.name = n; save(); renderMain(); toast('Renamed');
+  });
+}
+function confirmDelSec(tier,secId,name) {
+  const sec = gsecs(tier).find(s => s.id===secId);
+  const n = sec?.items.length||0;
+  modal('Delete Section',
+    `Delete "${name}"${n?` and its ${n} item${n!==1?'s':''}`:''}? Cannot be undone.`,
+    'Delete','#ef4444',() => {
+      const d = ald(); if (!d) return;
+      d.sections[tier] = d.sections[tier].filter(s => s.id!==secId);
+      save(); render(); toast('Section deleted');
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ITEM ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function addItem(tier,secId) {
+  const n = document.getElementById('ain-'+secId)?.value.trim();
+  const notes = document.getElementById('ait-'+secId)?.value.trim()||'';
+  if (!n) { toast('Enter a deliverable name'); return; }
+  const sec = gsecs(tier).find(s => s.id===secId); if (!sec) return;
+  sec.items.push({id:uid(), name:n, notes});
+  save(); renderMain(); toast('Item added');
+  document.getElementById('ain-'+secId)?.focus();
+}
+function confirmDelItem(tier,secId,itemId,name) {
+  modal('Remove Item',`Remove "${name}"? Cannot be undone.`,'Remove','#ef4444',() => {
+    const sec = gsecs(tier).find(s => s.id===secId); if (!sec) return;
+    sec.items = sec.items.filter(i => i.id!==itemId);
+    save(); renderMain(); toast('Item removed');
   });
 }
 
-// ── ITEM ACTIONS ───────────────────────────────────────
-function addItem(tier,secId){
-  const ni=document.getElementById('ain-'+secId); const ti=document.getElementById('ait-'+secId);
-  const name=ni?.value.trim(); if(!name){toast('Enter a deliverable name');return;}
-  const sec=getSecs(tier).find(s=>s.id===secId); if(!sec) return;
-  sec.items.push({id:uid(),name,notes:ti?.value.trim()||''});
-  save(); renderMain(); toast('Item added'); document.getElementById('ain-'+secId)?.focus();
+// ═══════════════════════════════════════════════════════════════
+// PRODUCT ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function addProduct() {
+  const tier = document.getElementById('np-tier').value;
+  const name = document.getElementById('np-name').value.trim();
+  if (!name) { toast('Enter a product name'); return; }
+  const d = ald(); if (!d) return;
+  if (!d.products[tier]) d.products[tier] = [];
+  if (d.products[tier].includes(name)) { toast('Already exists'); return; }
+  d.products[tier].push(name);
+  document.getElementById('np-name').value = '';
+  save(); goProd(tier,name); toast('Product added: '+name);
 }
-function confirmDelItem(tier,secId,itemId,name){
-  modal('Remove Item',`Remove "${name}"? Cannot be undone.`,null,'Remove','#ef4444',()=>{
-    const sec=getSecs(tier).find(s=>s.id===secId); if(sec){sec.items=sec.items.filter(i=>i.id!==itemId);save();renderMain();toast('Item removed');}
+function renameProd(tier,prod) {
+  modal('Rename Product',[['Name','text','rp-n','Name…',prod]],'Save','var(--blue)',() => {
+    const n = qv('rp-n'); if (!n) return false;
+    const d = ald(); if (!d) return;
+    const idx = (d.products[tier]||[]).indexOf(prod); if (idx===-1) return;
+    const ok = tier+'||'+prod, nk = tier+'||'+n;
+    if (d.status[ok]) { d.status[nk]=d.status[ok]; delete d.status[ok]; }
+    d.products[tier][idx] = n;
+    if (V.type==='product' && V.tier===tier && V.prod===prod) V.prod=n;
+    save(); render(); toast('Renamed');
+  });
+}
+function confirmDelProd(tier,prod) {
+  modal('Remove Product',`Remove "${prod}" from ${tier}?`,'Remove','#ef4444',() => {
+    const d = ald(); if (!d) return;
+    d.products[tier] = (d.products[tier]||[]).filter(p => p!==prod);
+    delete d.status[`${tier}||${prod}`];
+    if (V.type==='product' && V.tier===tier && V.prod===prod) goOv();
+    else { save(); render(); }
+    save(); toast('Removed');
   });
 }
 
-// ── PRODUCT ACTIONS ────────────────────────────────────
-function addProduct(){
-  const tier=document.getElementById('np-tier').value; const name=document.getElementById('np-name').value.trim();
-  if(!name){toast('Enter a product name');return;}
-  const d=ald(); if(!d.products[tier]) d.products[tier]=[];
-  if(d.products[tier].includes(name)){toast('Already exists');return;}
-  d.products[tier].push(name); save();
-  document.getElementById('np-name').value=''; showProd(tier,name); toast('Product added: '+name);
+// ═══════════════════════════════════════════════════════════════
+// TIER ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function addTier() {
+  const n = document.getElementById('add-tier-inp')?.value.trim();
+  if (!n) { toast('Enter a tier name'); return; }
+  const d = ald(); if (!d) return;
+  if (d.tiers.includes(n)) { toast('Already exists'); return; }
+  d.tiers.push(n);
+  if (!d.products[n]) d.products[n] = [];
+  if (!d.sections[n]) d.sections[n] = [];
+  save(); renderMain(); toast('Tier added');
+  document.getElementById('add-tier-inp')?.focus();
 }
-function renameProd(tier,prod){
-  modal('Rename Product',null,prod,'Save','var(--blue)',(val)=>{
-    if(!val?.trim()) return;
-    const d=ald(); const idx=(d.products[tier]||[]).indexOf(prod); if(idx===-1) return;
-    const oldK=tier+'||'+prod, newK=tier+'||'+val.trim();
-    if(d.status[oldK]){d.status[newK]=d.status[oldK];delete d.status[oldK];}
-    d.products[tier][idx]=val.trim(); save();
-    if(view.type==='product'&&view.tier===tier&&view.prod===prod) view.prod=val.trim();
-    render(); toast('Product renamed');
-  });
-}
-function deleteProd(tier,prod){
-  modal('Remove Product',`Remove "${prod}" from ${tier}?`,null,'Remove','#ef4444',()=>{
-    const d=ald(); d.products[tier]=(d.products[tier]||[]).filter(p=>p!==prod); delete d.status[tier+'||'+prod];
-    save(); if(view.type==='product'&&view.tier===tier&&view.prod===prod) showOverview(); else render();
-    toast('Product removed');
-  });
-}
-
-// ── TIER ACTIONS ───────────────────────────────────────
-function addTier(){
-  const inp=document.getElementById('ati'); const name=inp?.value.trim();
-  if(!name){toast('Enter a tier name');return;}
-  const d=ald(); if(d.tiers.includes(name)){toast('Tier already exists');return;}
-  d.tiers.push(name); if(!d.products[name]) d.products[name]=[]; if(!d.sections[name]) d.sections[name]=[];
-  save(); renderMain(); toast('Tier added'); document.getElementById('ati')?.focus();
-}
-function renameTier(tier){
-  modal('Rename Tier',null,tier,'Save','var(--blue)',(val)=>{
-    if(!val?.trim()||val.trim()===tier) return;
-    const nn=val.trim(); const d=ald(); const idx=d.tiers.indexOf(tier); if(idx===-1) return;
-    d.tiers[idx]=nn; d.products[nn]=d.products[tier]||[]; delete d.products[tier];
-    d.sections[nn]=d.sections[tier]||[]; delete d.sections[tier];
-    for(const k of Object.keys(d.status)){if(k.startsWith(tier+'||')){const p=k.slice(tier.length+2);d.status[nn+'||'+p]=d.status[k];delete d.status[k];}}
-    if(view.type==='product'&&view.tier===tier) view.tier=nn;
+function renameTier(tier) {
+  modal('Rename Tier',[['Name','text','rt-n','Name…',tier]],'Save','var(--blue)',() => {
+    const n = qv('rt-n'); if (!n||n===tier) return false;
+    const d = ald(); if (!d) return;
+    const idx = d.tiers.indexOf(tier); if (idx===-1) return;
+    d.tiers[idx] = n;
+    d.products[n] = d.products[tier]||[]; delete d.products[tier];
+    d.sections[n] = d.sections[tier]||[]; delete d.sections[tier];
+    for (const k of Object.keys(d.status)) {
+      if (k.startsWith(tier+'||')) {
+        const p = k.slice(tier.length+2);
+        d.status[`${n}||${p}`] = d.status[k]; delete d.status[k];
+      }
+    }
+    if (V.type==='product' && V.tier===tier) V.tier=n;
     save(); render(); toast('Tier renamed');
   });
 }
-function confirmDelTier(tier){
-  const n=(ald().products[tier]||[]).length;
-  modal('Delete Tier',`Delete "${tier}" and all ${n} product${n!==1?'s':''}? Cannot be undone.`,null,'Delete','#ef4444',()=>{
-    const d=ald(); d.tiers=d.tiers.filter(t=>t!==tier); delete d.products[tier]; delete d.sections[tier];
-    for(const k of Object.keys(d.status)){if(k.startsWith(tier+'||')) delete d.status[k];}
-    save(); if(view.type==='product'&&view.tier===tier) showOverview(); else render();
-    toast('Tier deleted');
-  });
+function confirmDelTier(tier) {
+  const d = ald();
+  const n = (d?.products[tier]||[]).length;
+  modal('Delete Tier',
+    `Delete "${tier}" and all ${n} product${n!==1?'s':''}? Cannot be undone.`,
+    'Delete','#ef4444',() => {
+      const d = ald(); if (!d) return;
+      d.tiers = d.tiers.filter(t => t!==tier);
+      delete d.products[tier]; delete d.sections[tier];
+      for (const k of Object.keys(d.status)) {
+        if (k.startsWith(tier+'||')) delete d.status[k];
+      }
+      if (V.type==='product' && V.tier===tier) goOv(); else render();
+      save(); toast('Tier deleted');
+    });
 }
 
-
-// ── STATUS OPTION ACTIONS ──────────────────────────────
-function addStatus(){
-  const inp=document.getElementById('st-inp'); const label=inp?.value.trim();
-  if(!label){toast('Enter a status name');return;}
-  if(!G.statuses) G.statuses=JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-  if(G.statuses.find(s=>s.label===label)){toast('Status already exists');return;}
-  G.statuses.push({label,cls:'custom'});
+// ═══════════════════════════════════════════════════════════════
+// STATUS ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function addStatus() {
+  const label = document.getElementById('add-st-inp')?.value.trim();
+  if (!label) { toast('Enter a status name'); return; }
+  if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEF_STATUSES));
+  if (G.statuses.find(s => s.label===label)) { toast('Already exists'); return; }
+  G.statuses.push({label, cls:'custom'});
   save(); renderMain(); toast('Status added');
-  document.getElementById('st-inp')?.focus();
+  document.getElementById('add-st-inp')?.focus();
 }
-function deleteStatus(idx){
-  if(!G.statuses) G.statuses=JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-  if(idx<2){toast('Cannot remove built-in statuses');return;}
-  const label=G.statuses[idx]?.label;
-  G.statuses.splice(idx,1); save(); renderMain();
+function delStatus(i) {
+  if (i<2) { toast('Cannot remove built-in statuses'); return; }
+  if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEF_STATUSES));
+  const label = G.statuses[i]?.label;
+  G.statuses.splice(i,1); save(); renderMain();
   toast(label ? `"${label}" removed` : 'Status removed');
 }
-function setStatusCls(idx,cls){
-  if(!G.statuses) G.statuses=JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-  if(G.statuses[idx]) {G.statuses[idx].cls=cls; save(); renderMain();}
+function setStCls(i,cls) {
+  if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEF_STATUSES));
+  if (G.statuses[i]) { G.statuses[i].cls=cls; save(); renderMain(); }
 }
-// ── MODAL ──────────────────────────────────────────────
-function modal(title,msg,inputDefault,okLabel,okColor,onOk,extraHTML=''){
-  const c=document.getElementById('mc'); const hasInput=inputDefault!==null;
-  c.innerHTML=`<div class="mbk" onclick="if(event.target===this)closeModal()"><div class="modal">
-    <div class="m-ttl">${x(title)}</div>
-    ${msg?`<div class="m-msg">${x(msg)}</div>`:''}
-    ${extraHTML}
-    ${hasInput?`<input id="m-inp" class="m-inp" type="text" value="${x(inputDefault||'')}" placeholder="Enter name…" onkeydown="if(event.key==='Enter')document.getElementById('m-ok').click()"/>`:''}
-    <div class="m-acts"><button class="m-cancel" onclick="closeModal()">Cancel</button><button class="m-ok" id="m-ok" style="background:${okColor}">${okLabel}</button></div>
-  </div></div>`;
-  if(hasInput){const i=document.getElementById('m-inp');i.focus();i.select();}
-  document.getElementById('m-ok').onclick=()=>{const val=hasInput?document.getElementById('m-inp').value:null;closeModal();onOk(val);};
-}
-function closeModal(){document.getElementById('mc').innerHTML='';}
 
-// ── UTILS ──────────────────────────────────────────────
-function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function sCls(s){
-  const st = getStatuses().find(x=>x.label===s);
+// ═══════════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════════
+function modal(title, fields, okLabel, okColor, onOk, extraBtns) {
+  let body = '';
+  if (typeof fields === 'string') {
+    body = `<div class="mmsg">${fields}</div>`;
+  } else {
+    for (const [lbl,type,id,ph,val] of fields) {
+      body += `<label class="mlbl">${lbl}</label>
+        <input id="${id}" class="minp" type="${type}" placeholder="${xe(ph)}" value="${xe(val||'')}"
+          onkeydown="if(event.key==='Enter')document.getElementById('m-ok').click()"/>`;
+    }
+  }
+  document.getElementById('mc').innerHTML = `
+    <div class="mbk" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <div class="mttl">${title}</div>
+        ${body}
+        <div class="macts">
+          <button class="mcancel" onclick="closeModal()">Cancel</button>
+          ${extraBtns||''}
+          <button class="mok" id="m-ok" style="background:${okColor}">${okLabel}</button>
+        </div>
+      </div>
+    </div>`;
+  if (Array.isArray(fields) && fields.length) {
+    const f = document.getElementById(fields[0][2]);
+    if (f) { f.focus(); if (f.type!=='date') f.select(); }
+  }
+  document.getElementById('m-ok').onclick = () => {
+    if (onOk() !== false) closeModal();
+  };
+}
+function closeModal() { document.getElementById('mc').innerHTML=''; }
+function qv(id) { return document.getElementById(id)?.value?.trim()||''; }
+
+// ═══════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════
+function xe(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function scls(s) {
+  const st = gstatuses().find(x => x.label===s);
   return st ? st.cls : 'not-started';
 }
 let _tt;
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),1800);}
-
-// Start — load from Firebase then listen for live changes
-function applyRemoteState(remote) {
-  if (!remote || !remote.launchDays || !remote.launchDays.length) return false;
-  const localActiveId = G.activeId;
-  G = remote;
-  if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-  // Keep the user on their current day if it still exists, otherwise use first day
-  G.activeId = (G.launchDays.find(d => d.id === localActiveId)) ? localActiveId : G.launchDays[0].id;
-  return true;
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isErr?' err':'');
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function loadFromLocalBackup() {
-  try {
-    const raw = localStorage.getItem('true_tracker_backup');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && parsed.launchDays && parsed.launchDays.length) {
-        G = parsed;
-        if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-        toast('Loaded from local backup — reconnecting to Firebase…');
-        return true;
-      }
-    }
-  } catch(e) {}
-  return false;
-}
+// ═══════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════
+setSyncUI('ok');
+render();
+initSupabase();
 
-// Initial load
-STATE_REF.once('value').then((snap) => {
-  const remote = snap.val();
-  if (applyRemoteState(remote)) {
-    // Got data from Firebase — also save locally as backup
-    saveLocal();
-    setConnUI(true, 'Live');
-  } else {
-    // Nothing in Firebase yet — check local backup first
-    if (!loadFromLocalBackup()) {
-      // Brand new — seed Firebase with defaults
-      STATE_REF.set(serializeState());
-    }
-  }
-  render();
-  // Start listening AFTER initial render so first listener fire doesn't double-render
-  setTimeout(startListening, 50);
-}).catch((err) => {
-  console.error('Firebase load error:', err);
-  const msg = String(err);
-  if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
-    showRulesModal();
-    setConnUI(false, 'Rules expired');
-  } else {
-    // Firebase unreachable — try local backup, then show offline
-    if (!loadFromLocalBackup()) {
-      toast('Could not connect to Firebase — working offline');
-    }
-    setConnUI(false, 'Offline');
-  }
-  render();
-  setTimeout(startListening, 50);
-});
 </script>
 </body>
 </html>
