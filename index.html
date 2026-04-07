@@ -158,16 +158,6 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);
 
 /* ── HOME PAGE ── */
 .home-wrap{min-height:calc(100vh - 52px);background:var(--black)}
-.home-banner{position:relative;width:100%;min-height:220px;background:var(--bcard);border-bottom:1px solid var(--bborder);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
-.home-banner img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.home-banner-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.2),rgba(0,0,0,.7))}
-.home-banner-content{position:relative;z-index:2;text-align:center;padding:40px 24px}
-.home-banner-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;letter-spacing:.06em;text-transform:uppercase;color:var(--white);text-shadow:0 2px 20px rgba(0,0,0,.5)}
-.home-banner-sub{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:8px}
-.home-banner-edit{position:absolute;top:12px;right:12px;z-index:3;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);color:var(--white);font-family:'DM Mono',monospace;font-size:10px;padding:5px 12px;border-radius:3px;cursor:pointer;backdrop-filter:blur(4px);transition:all .15s}
-.home-banner-edit:hover{background:rgba(0,163,224,.4);border-color:var(--blue)}
-.home-banner-placeholder{color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
-.home-banner-placeholder svg{opacity:.3}
 
 .home-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;padding:28px}
 
@@ -200,7 +190,10 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);
 .home-btn:hover{border-color:var(--blue);color:var(--blue)}
 
 /* image upload hidden input */
-#banner-file-inp{display:none}
+
+.ld-card-edit-btn{background:none;border:none;cursor:pointer;font-size:11px;padding:2px 4px;opacity:0;transition:opacity .15s;color:var(--gdark);line-height:1}
+.ld-home-card:hover .ld-card-edit-btn{opacity:1}
+.ld-card-edit-btn:hover{color:var(--blue)}
 /* ── OVERVIEW ── */
 .ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:20px 28px}
 .ov-card{background:var(--bcard);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s;border:1px solid var(--bborder)}
@@ -476,13 +469,68 @@ function defaultState() {
 let G = defaultState();
 
 // Debounced save — batches rapid changes into one Firebase write
+// localStorage backup — written before every Firebase attempt
+function saveLocal() {
+  try { localStorage.setItem('true_tracker_backup', JSON.stringify(G)); } catch(e) {}
+}
+
+// Strip large data that shouldn't go to Firebase
+function serializeState() {
+  const copy = JSON.parse(JSON.stringify(G));
+  return copy;
+}
+
+function setConnUI(ok, label) {
+  const dot = document.getElementById('conn-dot');
+  const lbl = document.getElementById('conn-lbl');
+  if (dot) dot.style.background = ok ? '#4ade80' : '#f87171';
+  if (lbl) { lbl.style.color = ok ? '#4ade80' : '#f87171'; lbl.textContent = label || (ok ? 'Live' : 'Offline'); }
+}
+
+function handleSaveError(err) {
+  _isSaving = false;
+  const msg = String(err);
+  console.error('Firebase save error:', err);
+  if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
+    setConnUI(false, 'Rules expired');
+    showRulesModal();
+  } else {
+    setConnUI(false, 'Offline — saved locally');
+    toast('No connection — data saved locally and will sync when back online');
+  }
+}
+
+function showRulesModal() {
+  if (window._rulesModalShown) return;
+  window._rulesModalShown = true;
+  document.getElementById('mc').innerHTML =
+    '<div class="mbk"><div class="modal">' +
+    '<div class="m-ttl" style="color:#f87171">⚠ Firebase Rules Expired</div>' +
+    '<div class="m-msg">Your Firebase database rules have expired. ' +
+    'Data is no longer saving to the cloud.<br><br>' +
+    '<strong>Fix in 30 seconds:</strong><br>' +
+    '1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--blue)">console.firebase.google.com</a><br>' +
+    '2. Build → Realtime Database → Rules<br>' +
+    '3. Paste this and click Publish:<br><br>' +
+    '<code style="background:var(--bmid);padding:10px;display:block;border-radius:4px;font-size:12px;line-height:1.6">' +
+    '{<br>&nbsp;&nbsp;"rules": {<br>&nbsp;&nbsp;&nbsp;&nbsp;".read": true,<br>&nbsp;&nbsp;&nbsp;&nbsp;".write": true<br>&nbsp;&nbsp;}<br>}' +
+    '</code><br>' +
+    'Your data is safe — it's backed up locally in this browser.</div>' +
+    '<div class="m-acts"><button class="m-ok" style="background:var(--blue)" onclick="closeModal();window._rulesModalShown=false">Got it</button></div>' +
+    '</div></div>';
+}
+
 function save() {
+  saveLocal(); // always backup locally first
   clearTimeout(_saveTimeout);
   _saveTimeout = setTimeout(() => {
     _isSaving = true;
-    STATE_REF.set(JSON.parse(JSON.stringify(G)))
-      .then(() => { setTimeout(() => { _isSaving = false; }, 500); })
-      .catch(err => { _isSaving = false; console.error('Firebase save error:', err); });
+    STATE_REF.set(serializeState())
+      .then(() => {
+        _isSaving = false;
+        setConnUI(true, 'Live');
+      })
+      .catch(err => handleSaveError(err));
   }, 300);
 }
 
@@ -530,20 +578,9 @@ function startListening() {
   });
 }
 
-// Connection status indicator
+// Live connection indicator
 db.ref('.info/connected').on('value', (snap) => {
-  const dot = document.getElementById('conn-dot');
-  const lbl = document.getElementById('conn-lbl');
-  if (!dot || !lbl) return;
-  if (snap.val()) {
-    dot.style.background = '#4ade80';
-    lbl.style.color = '#4ade80';
-    lbl.textContent = 'Live';
-  } else {
-    dot.style.background = '#f87171';
-    lbl.style.color = '#f87171';
-    lbl.textContent = 'Offline';
-  }
+  setConnUI(!!snap.val(), snap.val() ? 'Live' : 'Offline');
 });
 
 function ald() {
@@ -933,17 +970,7 @@ function countdown(dateStr) {
 }
 
 function renderHome() {
-  const banner = G.homeBanner || null;
-  const bannerHTML = banner
-    ? `<img src="${banner}" alt="Banner"/><div class="home-banner-overlay"></div>
-       <div class="home-banner-content">
-         <div class="home-banner-title">TRUE HOCKEY</div>
-         <div class="home-banner-sub">Launch Asset Tracker</div>
-       </div>`
-    : `<div class="home-banner-placeholder">
-         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-         <span>Click to upload a banner image</span>
-       </div>`;
+
 
   let cards = '';
   for (const ld of G.launchDays) {
@@ -976,11 +1003,14 @@ function renderHome() {
 
     cards += `<div class="ld-home-card" onclick="switchLd('${ld.id}');showOverview()">
       <div class="ld-home-card-top">
-        <div>
+        <div style="flex:1;min-width:0">
           <div class="ld-home-name">${x(ld.name)}</div>
-          <div class="ld-home-date">${ld.date || 'No date set'}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <div class="ld-home-date">${ld.date || '<span style=\'color:var(--gdark);font-style:italic\'>No date set</span>'}</div>
+            <button class="ld-card-edit-btn" onclick="event.stopPropagation();editLdCard('${ld.id}')" title="Edit">✏️</button>
+          </div>
         </div>
-        <div class="ld-home-countdown">${cdHTML}</div>
+        <div class="ld-home-countdown" onclick="event.stopPropagation();setLdDate('${ld.id}')" title="Click to edit date" style="cursor:pointer">${cdHTML}</div>
       </div>
       <div class="ld-home-ring-row">
         <div class="face-ring" id="fring-${ld.id}">
@@ -995,14 +1025,7 @@ function renderHome() {
     </div>`;
   }
 
-  return `<div class="home-wrap">
-    <div class="home-banner" onclick="triggerBannerUpload()">
-      ${bannerHTML}
-      <button class="home-banner-edit" onclick="event.stopPropagation();triggerBannerUpload()">📷 ${banner ? 'Change banner' : 'Upload banner'}</button>
-    </div>
-    <input type="file" id="banner-file-inp" accept="image/*" onchange="onBannerUpload(this)"/>
-    <div class="home-cards">${cards}</div>
-  </div>`;
+  return '<div class="home-wrap"><div class="home-cards">' + cards + '</div></div>';
 }
 
 function initHomeCountdowns() {
@@ -1018,21 +1041,45 @@ function initHomeCountdowns() {
   }, 60000);
 }
 
-function triggerBannerUpload() {
-  document.getElementById('banner-file-inp')?.click();
+
+
+
+function editLdCard(ldId) {
+  const ld = G.launchDays.find(d => d.id === ldId);
+  if (!ld) return;
+  const delBtn = G.launchDays.length > 1
+    ? '<button onclick="closeModal();confirmDelLd(\'' + ldId + '\')" style="background:transparent;border:1px solid #555;color:#f87171;font-family:Barlow,sans-serif;font-size:13px;padding:8px 16px;border-radius:4px;cursor:pointer;margin-right:auto">Delete</button>'
+    : '';
+  document.getElementById('mc').innerHTML =
+    '<div class="mbk" onclick="if(event.target===this)closeModal()">' +
+    '<div class="modal">' +
+      '<div class="m-ttl">Edit Launch Day</div>' +
+      '<div style="margin-bottom:6px;font-family:DM Mono,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gdark)">Name</div>' +
+      '<input id="elc-name" class="m-inp" type="text" value="' + x(ld.name) + '" placeholder="Launch day name…" style="margin-bottom:14px"/>' +
+      '<div style="margin-bottom:6px;font-family:DM Mono,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gdark)">Launch Date</div>' +
+      '<input id="elc-date" class="m-inp" type="date" value="' + (ld.date||'') + '" style="margin-bottom:6px;color-scheme:dark"/>' +
+      '<div style="font-size:11px;color:var(--gdark);margin-bottom:18px">Used for the countdown on the home page.</div>' +
+      '<div class="m-acts">' +
+        '<button class="m-cancel" onclick="closeModal()">Cancel</button>' +
+        delBtn +
+        '<button class="m-ok" style="background:var(--blue)" onclick="saveEditLdCard(\'' + ldId + '\')">Save</button>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
+  document.getElementById('elc-name').focus();
 }
 
-function onBannerUpload(inp) {
-  const file = inp.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    G.homeBanner = e.target.result;
-    save();
-    renderMain();
-    toast('Banner updated');
-  };
-  reader.readAsDataURL(file);
+function saveEditLdCard(ldId) {
+  const ld = G.launchDays.find(d => d.id === ldId);
+  if (!ld) return;
+  const name = document.getElementById('elc-name')?.value.trim();
+  const date = document.getElementById('elc-date')?.value.trim();
+  if (name) ld.name = name;
+  ld.date = date || '';
+  closeModal();
+  save();
+  renderMain();
+  toast('Launch day updated');
 }
 
 function setLdDate(ldId) {
@@ -1198,26 +1245,57 @@ let _tt;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),1800);}
 
 // Start — load from Firebase then listen for live changes
+function applyRemoteState(remote) {
+  if (!remote || !remote.launchDays || !remote.launchDays.length) return false;
+  const localActiveId = G.activeId;
+  G = remote;
+  if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
+  if (!G.launchDays.find(d => d.id === G.activeId)) G.activeId = G.launchDays[0].id;
+  else G.activeId = localActiveId;
+  return true;
+}
+
+function loadFromLocalBackup() {
+  try {
+    const raw = localStorage.getItem('true_tracker_backup');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.launchDays && parsed.launchDays.length) {
+        G = parsed;
+        if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
+        toast('Loaded from local backup — reconnecting to Firebase…');
+        return true;
+      }
+    }
+  } catch(e) {}
+  return false;
+}
+
+// Initial load
 STATE_REF.once('value').then((snap) => {
   const remote = snap.val();
-  if (remote && remote.launchDays && remote.launchDays.length) {
-    G = remote;
-    if (!G.statuses) G.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
-    // If saved activeId no longer exists, fall back to first day
-    if (!G.launchDays.find(d => d.id === G.activeId)) {
-      G.activeId = G.launchDays[0].id;
-    }
+  if (applyRemoteState(remote)) {
+    // Got data from Firebase — also save locally as backup
+    saveLocal();
+    setConnUI(true, 'Live');
   } else {
-    // No data in Firebase yet — seed with defaults
-    STATE_REF.set(JSON.parse(JSON.stringify(G)));
+    // Nothing in Firebase yet — check local backup first
+    if (!loadFromLocalBackup()) {
+      // Brand new — seed Firebase with defaults
+      STATE_REF.set(serializeState());
+    }
   }
   render();
   startListening();
 }).catch((err) => {
   console.error('Firebase load error:', err);
-  // Firebase unavailable — render with local defaults, keep trying to listen
+  // Firebase unreachable — try local backup, then fall back to defaults
+  if (!loadFromLocalBackup()) {
+    toast('Could not connect to Firebase — working offline');
+  }
+  setConnUI(false, 'Offline');
   render();
-  startListening();
+  startListening(); // keep trying
 });
 </script>
 </body>
