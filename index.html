@@ -111,7 +111,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;opacity:.03;
 .cact.del:hover{background:rgba(239,68,68,.12);color:var(--warn)}
 .itbl{background:var(--b2);border:1px solid var(--border);border-top:none}
 .catblock.collapsed .itbl{display:none}
-.irow{display:grid;grid-template-columns:1fr 165px 120px 100px 100px 150px 36px;align-items:stretch;border-bottom:1px solid var(--border);transition:background .12s}
+.irow{display:grid;grid-template-columns:36px 1fr 165px 120px 100px 120px 150px 36px;align-items:stretch;border-bottom:1px solid var(--border);transition:background .12s,border-left-color .2s}
 .irow:last-child{border-bottom:none}
 .irow:not(.hrow):hover{background:rgba(0,163,224,.03)}
 .irow:not(.hrow):hover .delbtn{opacity:1}
@@ -132,6 +132,17 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;opacity:.03;
 .ss.custom{background:rgba(192,132,252,.1);color:var(--purple);box-shadow:inset 0 0 0 1px rgba(192,132,252,.15)}
 .delbtn{background:none;border:none;cursor:pointer;color:var(--g1);font-size:15px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .12s}
 .delbtn:hover{color:var(--warn);background:rgba(239,68,68,.06)}
+
+/* ── ROW STATUS COLORS ── */
+.irow.row-complete{border-left:2px solid var(--accent);background:rgba(74,222,128,.02)}
+.irow.row-in-progress{border-left:2px solid var(--blue);background:rgba(0,163,224,.02)}
+.irow.row-not-started{border-left:2px solid transparent}
+.irow.row-na{border-left:2px solid transparent;opacity:.5}
+.irow.row-custom{border-left:2px solid var(--purple);background:rgba(192,132,252,.02)}
+.irow.row-overdue{background:rgba(248,113,113,.04)!important}
+.irow.row-overdue .fc input[data-f="due"]{color:var(--warn)!important}
+.irow.row-due-soon{background:rgba(251,191,36,.03)!important}
+.irow.row-due-soon .fc input[data-f="due"]{color:#fbbf24!important}
 .airow{display:flex;align-items:stretch;border-top:1px solid var(--border);background:rgba(0,0,0,.15)}
 .ainput{flex:1;border:none;background:transparent;font-family:'Barlow',sans-serif;font-size:12px;color:var(--white);padding:8px 11px;outline:none}
 .ainotes{width:165px;border:none;border-left:1px solid var(--border);background:transparent;font-family:'Barlow',sans-serif;font-size:12px;color:var(--white);padding:8px 11px;outline:none}
@@ -257,11 +268,6 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;opacity:.03;
 .stdel{background:none;border:none;cursor:pointer;color:var(--g1);font-size:14px;margin-left:auto;padding:2px 6px;transition:color .12s;flex-shrink:0}
 .stdel:hover{color:var(--warn)}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:22px;right:22px;background:linear-gradient(135deg,var(--b3),var(--b2));color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:10px 16px;border-radius:8px;border-left:3px solid var(--blue);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.toast.show{opacity:1;transform:translateY(0)}
-.toast.err{border-left-color:var(--warn)}
-
 /* ── MODAL ── */
 .mbk{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:400;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease}
 .modal{background:linear-gradient(145deg,var(--b3),var(--b2));border:1px solid var(--border);border-radius:12px;padding:28px;width:420px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(0,163,224,.05)}
@@ -283,8 +289,45 @@ select option{background:#141920;color:white}
 /* ── ANIMATIONS ── */
 @keyframes fadeSlideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes ringGrow{from{stroke-dashoffset:var(--ring-full)}to{stroke-dashoffset:var(--ring-target)}}
 
-/* ── ADMIN / VIEWER MODE ── */
+/* ── EMPTY STATES ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;animation:fadeSlideIn .4s ease both}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:.5;filter:grayscale(.5)}
+.empty-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);margin-bottom:6px}
+.empty-sub{font-family:'DM Mono',monospace;font-size:11px;color:var(--g1);max-width:300px;line-height:1.5}
+.empty-btn{margin-top:16px;background:linear-gradient(135deg,var(--blue),var(--blue2));border:none;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:9px 18px;border-radius:6px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,163,224,.2)}
+.empty-btn:hover{box-shadow:0 4px 16px rgba(0,163,224,.35);transform:translateY(-1px)}
+
+/* ── UNDO TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;background:linear-gradient(135deg,var(--b3),var(--b2));color:var(--white);font-family:'DM Mono',monospace;font-size:11px;padding:10px 16px;border-radius:8px;border-left:3px solid var(--blue);opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px}
+.toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.toast.err{border-left-color:var(--warn)}
+.toast-msg{flex:1}
+.toast-undo{background:none;border:1px solid rgba(0,163,224,.4);color:var(--blue);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:4px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.toast-undo:hover{background:var(--blueglow);border-color:var(--blue)}
+
+/* ── BULK ACTIONS BAR ── */
+.bulk-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(135deg,rgba(0,163,224,.06),rgba(0,119,182,.04));border:1px solid rgba(0,163,224,.15);border-radius:8px;margin-bottom:12px;animation:fadeSlideIn .2s ease both}
+.bulk-count{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--blue);text-transform:uppercase;flex-shrink:0}
+.bulk-acts{display:flex;gap:6px;flex:1;justify-content:flex-end;flex-wrap:wrap}
+.bulk-btn{background:var(--b3);border:1px solid var(--border);color:var(--g3);font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.bulk-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blueglow2)}
+.bulk-btn.dim:hover{border-color:var(--g1);color:var(--g1)}
+.bulk-date{background:var(--b3);border:1px solid var(--border);color:var(--white);font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;outline:none;cursor:pointer;color-scheme:dark;transition:border-color .15s}
+.bulk-date:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blueglow)}
+.bulk-clear{background:none;border:none;color:var(--g1);font-family:'DM Mono',monospace;font-size:10px;padding:4px 8px;cursor:pointer;transition:color .12s;flex-shrink:0}
+.bulk-clear:hover{color:var(--white)}
+
+/* ── CHECKBOX COLUMN ── */
+.irow .chkcol{display:flex;align-items:center;justify-content:center;width:36px;flex-shrink:0}
+.irow .chkcol input[type=checkbox]{accent-color:var(--blue);cursor:pointer;width:14px;height:14px}
+
+/* ── DATE PICKER INPUT ── */
+.fc input[type="date"]{font-family:'DM Mono',monospace;font-size:11px;color:var(--white);background:transparent;border:none;padding:9px 11px;width:100%;outline:none;height:100%;cursor:pointer;transition:background .15s;color-scheme:dark}
+.fc input[type="date"]:focus{background:var(--blueglow2)}
+.fc input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5);cursor:pointer;opacity:.5;transition:opacity .15s}
+.fc input[type="date"]:hover::-webkit-calendar-picker-indicator{opacity:1}
 .admin-btn{background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--g3);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;padding:5px 12px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap}
 .admin-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blueglow2)}
 .admin-btn.active{border-color:var(--blue);background:var(--blueglow);color:var(--blue);box-shadow:0 0 12px rgba(0,163,224,.15)}
@@ -301,6 +344,9 @@ body.viewer .mgrlnk,
 body.viewer .apf,
 body.viewer .sblbl:has(+ .apf),
 body.viewer .catacts{display:none!important}
+body.viewer .bulk-bar,
+body.viewer .chkcol,
+body.viewer .empty-btn{display:none!important}
 body.viewer .fc input,
 body.viewer .fcnotes input,
 body.viewer .fccmt input{pointer-events:none;opacity:.6}
@@ -308,6 +354,7 @@ body.viewer .ss{pointer-events:none}
 body.viewer .sidebar > div:last-child{display:none}
 .vpill{display:none;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--g2);padding:5px 12px;border:1px solid var(--border);border-radius:20px;white-space:nowrap;background:rgba(255,255,255,.02)}
 body.viewer .vpill{display:flex}
+body.viewer .irow{grid-template-columns:1fr 165px 120px 100px 120px 150px 36px}
 </style>
 </head>
 <body>
@@ -357,7 +404,7 @@ body.viewer .vpill{display:flex}
   </aside>
   <main class="main" id="main"></main>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast"><span class="toast-msg" id="toast-msg"></span><button class="toast-undo" id="toast-undo" style="display:none" onclick="doUndo()">Undo</button></div>
 <div id="mc"></div>
 <script>
 
@@ -805,7 +852,7 @@ function toggleTier(tier) {
 // ═══════════════════════════════════════════════════════════════
 // HOME
 // ═══════════════════════════════════════════════════════════════
-function faceoffRing(pct, sz=114) {
+function faceoffRing(pct, sz=114, animId) {
   const cx=sz/2, cy=sz/2, R=sz*.40, sw=sz*.052, dot=sz*.072;
   const hgap=sz*.09, hlen=sz*.13, hins=sz*.04;
   const hx=cx+R-hins, ht=cy-hgap/2, hb=cy+hgap/2;
@@ -814,15 +861,22 @@ function faceoffRing(pct, sz=114) {
   const x1=cx+R*Math.cos(a0), y1=cy+R*Math.sin(a0);
   const x2=cx+R*Math.cos(a1), y2=cy+R*Math.sin(a1);
   const la=pct>50?1:0;
+  const circ = 2*Math.PI*R;
+  const offset = circ - (pct/100)*circ;
   const arc = pct>=100
     ? `M ${cx} ${cy-R} A ${R} ${R} 0 1 1 ${cx-.001} ${cy-R}`
     : pct>0 ? `M ${x1} ${y1} A ${R} ${R} 0 ${la} 1 ${x2} ${y2}` : '';
   const tc='#1C1C1C', ic='#2A2A2A', ac=pct>=100?'#4ade80':'#00A3E0';
   const line = (x1,y1,x2,y2,sw) =>
     `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${ic}" stroke-width="${sw}" stroke-linecap="square"/>`;
+  // Use a circle with dasharray for animatable arc
+  const aid = animId || ('ring-'+Math.random().toString(36).slice(2,8));
   return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" fill="none">
     <circle cx="${cx}" cy="${cy}" r="${R}" stroke="${tc}" stroke-width="${sw}"/>
-    ${arc?`<path d="${arc}" stroke="${ac}" stroke-width="${sw}" stroke-linecap="butt"/>`:''}
+    ${pct>0?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${ac}" stroke-width="${sw}"
+      stroke-linecap="butt" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+      transform="rotate(-90 ${cx} ${cy})"
+      style="--ring-full:${circ};--ring-target:${offset};animation:ringGrow .8s cubic-bezier(.25,.46,.45,.94) both"/>`:``}
     ${line(cx-R+hins,ht,cx-R+hins-hlen,ht,sw*.75)}
     ${line(cx-R+hins,hb,cx-R+hins-hlen,hb,sw*.75)}
     ${line(hx,ht,hx+hlen,ht,sw*.75)}
@@ -1017,7 +1071,9 @@ function renderOv() {
   const d = ald(); if (!d) return '';
   const as = allStats();
   let cards = '';
+  let prodCount = 0;
   for (const tier of d.tiers) for (const prod of (d.products[tier]||[])) {
+    prodCount++;
     const ps = prodStats(tier,prod);
     cards += `<div class="ovcard" onclick="goProd('${xe(tier)}','${xe(prod)}')">
       <div class="ovtop">TIER ${d.tiers.indexOf(tier)+1} — ${xe(tier).toUpperCase()}</div>
@@ -1036,20 +1092,157 @@ function renderOv() {
       </div>
     </div>`;
   }
+  if (prodCount === 0) {
+    cards = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">🏒</div>
+      <div class="empty-title">No products yet</div>
+      <div class="empty-sub">Add products to this launch day using the Quick Add panel in the sidebar, or go to Manage Tiers &amp; Products.</div>
+      ${_isAdmin ? `<button class="empty-btn" onclick="goMgr()">Manage Tiers &amp; Products</button>` : ''}
+    </div>`;
+  }
   return ch(xe(d.name),'All Products',sbar(as)) + `<div class="ovgrid">${cards}</div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════
 // PRODUCT CHECKLIST
 // ═══════════════════════════════════════════════════════════════
+// ── BULK SELECTION STATE ──
+let _bulkSelected = new Set();
+
+function toggleBulk(tier, prod, itemId, cb) {
+  const key = `${tier}||${prod}||${itemId}`;
+  if (cb.checked) _bulkSelected.add(key); else _bulkSelected.delete(key);
+  renderBulkBar(tier, prod);
+}
+function toggleBulkAll(tier, prod, cb) {
+  const secs = gsecs(tier);
+  for (const sec of secs) for (const it of sec.items) {
+    const key = `${tier}||${prod}||${it.id}`;
+    if (cb.checked) _bulkSelected.add(key); else _bulkSelected.delete(key);
+  }
+  renderMain();
+}
+function bulkSetDue(tier, prod) {
+  if (!guardAdmin()) return;
+  const dateVal = document.getElementById('bulk-date-inp')?.value;
+  if (!dateVal) { toast('Pick a date first', true); return; }
+  for (const key of _bulkSelected) {
+    const [t, p, iid] = key.split('||');
+    if (t === tier && p === prod) sis(t, p, iid, 'due', dateVal);
+  }
+  const n = _bulkSelected.size;
+  _bulkSelected.clear();
+  renderMain();
+  toast(`Set due date on ${n} item${n!==1?'s':''}`);
+}
+function bulkClearDue(tier, prod) {
+  if (!guardAdmin()) return;
+  for (const key of _bulkSelected) {
+    const [t, p, iid] = key.split('||');
+    if (t === tier && p === prod) sis(t, p, iid, 'due', '');
+  }
+  const n = _bulkSelected.size;
+  _bulkSelected.clear();
+  renderMain();
+  toast(`Cleared due date on ${n} item${n!==1?'s':''}`);
+}
+function clearBulk() { _bulkSelected.clear(); renderMain(); }
+function renderBulkBar(tier, prod) {
+  const el = document.getElementById('bulk-bar');
+  if (!el) { renderMain(); return; }
+  if (_bulkSelected.size === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.querySelector('.bulk-count').textContent = `${_bulkSelected.size} selected`;
+}
+
+// ── DATE HELPERS ──
+function isOverdue(dateStr) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr + 'T23:59:59');
+  return d < new Date();
+}
+function isDueSoon(dateStr) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr + 'T23:59:59');
+  const now = new Date();
+  const diff = (d - now) / 86400000;
+  return diff >= 0 && diff <= 3;
+}
+
 function renderProd(tier, prod) {
   const d = ald(); if (!d) return '';
   const ps = prodStats(tier,prod);
-  let cats = '';
-  for (const sec of gsecs(tier)) {
+  const secs = gsecs(tier);
+
+  // Empty state for products with no sections
+  if (!secs.length) {
+    return ch('TIER '+(d.tiers.indexOf(tier)+1)+' — '+xe(tier).toUpperCase(), xe(prod),
+      `<div class="sbar" id="sbar">${sbar(ps)}</div>`) +
+      `<div class="ca"><div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No sections yet</div>
+        <div class="empty-sub">Add your first deliverable section to start tracking assets for this product.</div>
+        ${_isAdmin ? `<div class="asrow" style="margin-top:16px;justify-content:center">
+          <input class="asinp" id="as-inp" placeholder="+ Add new section…" style="max-width:260px"
+            onkeydown="if(event.key==='Enter')addSec('${xe(tier)}')"/>
+          <button class="asbtn" onclick="addSec('${xe(tier)}')">Add Section</button>
+        </div>` : ''}
+      </div></div>`;
+  }
+
+  // Bulk bar
+  let bulkBar = `<div class="bulk-bar" id="bulk-bar" style="display:${_bulkSelected.size>0?'flex':'none'}">
+    <div class="bulk-count">${_bulkSelected.size} selected</div>
+    <div class="bulk-acts">
+      <input type="date" id="bulk-date-inp" class="bulk-date" />
+      <button class="bulk-btn" onclick="bulkSetDue('${xe(tier)}','${xe(prod)}')">Set Due Date</button>
+      <button class="bulk-btn dim" onclick="bulkClearDue('${xe(tier)}','${xe(prod)}')">Clear Dates</button>
+      <button class="bulk-clear" onclick="clearBulk()">×</button>
+    </div>
+  </div>`;
+
+  let cats = bulkBar;
+  for (const sec of secs) {
     let sd=0;
     sec.items.forEach(it => { if (gis(tier,prod,it.id).status==='Complete') sd++; });
+
+    // Empty section state
+    if (!sec.items.length) {
+      const emptyContent = `<div class="itbl">
+        <div style="padding:28px;text-align:center">
+          <div style="font-size:24px;opacity:.4;margin-bottom:8px">📦</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--g1);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">No deliverables in this section</div>
+          <div class="airow" style="border-top:none;background:transparent;justify-content:center">
+            <input class="ainput" id="ain-${sec.id}" placeholder="+ Add first deliverable…"
+              onkeydown="if(event.key==='Enter')addItem('${xe(tier)}','${sec.id}')" style="max-width:300px;text-align:center"/>
+            <input class="ainotes" id="ait-${sec.id}" placeholder="Notes…"
+              onkeydown="if(event.key==='Enter')addItem('${xe(tier)}','${sec.id}')" style="max-width:160px"/>
+            <button class="aibtn" onclick="addItem('${xe(tier)}','${sec.id}')">Add</button>
+          </div>
+        </div>
+      </div>`;
+      cats += `<div class="catblock" id="cb-${sec.id}">
+        <div class="cathdr">
+          <button class="cattog" onclick="toggleCat('${sec.id}')">
+            <div class="catic">${sec.icon}</div>
+            <div class="cattl">${xe(sec.name)}</div>
+            <div class="catprg" id="cp-${sec.id}">0/0</div>
+            <div class="catchv">▼</div>
+          </button>
+          <div class="catacts">
+            <button class="cact" onclick="renameSec('${xe(tier)}','${sec.id}','${xe(sec.name)}')">✏️</button>
+            <button class="cact del" onclick="confirmDelSec('${xe(tier)}','${sec.id}','${xe(sec.name)}')">🗑</button>
+          </div>
+        </div>
+        ${emptyContent}
+      </div>`;
+      continue;
+    }
+
     let rows = `<div class="irow hrow">
+      <div class="icol" style="width:36px;min-width:36px;max-width:36px;padding:7px 4px;justify-content:center">
+        <input type="checkbox" style="accent-color:var(--blue);cursor:pointer" onchange="toggleBulkAll('${xe(tier)}','${xe(prod)}',this)"/>
+      </div>
       <div class="icol">Asset / Deliverable</div>
       <div class="icol">Notes / Specs</div>
       <div class="icol">Status</div>
@@ -1061,7 +1254,17 @@ function renderProd(tier, prod) {
     for (const item of sec.items) {
       const dd = gis(tier,prod,item.id);
       const sc = scls(dd.status);
-      rows += `<div class="irow">
+      const bulkKey = `${tier}||${prod}||${item.id}`;
+      const isChecked = _bulkSelected.has(bulkKey);
+      // Date-based row classes
+      const isComplete = dd.status === 'Complete' || dd.status === 'N/A';
+      let dateClass = '';
+      if (!isComplete && dd.due) {
+        if (isOverdue(dd.due)) dateClass = ' row-overdue';
+        else if (isDueSoon(dd.due)) dateClass = ' row-due-soon';
+      }
+      rows += `<div class="irow row-${sc}${dateClass}">
+        <div class="chkcol"><input type="checkbox" ${isChecked?'checked':''} onchange="toggleBulk('${xe(tier)}','${xe(prod)}','${item.id}',this)"/></div>
         <div class="fc fcname"><input type="text" value="${xe(item.name)}" placeholder="Deliverable…"
           data-tier="${xe(tier)}" data-sec="${sec.id}" data-item="${item.id}" data-f="name" onchange="onMeta(this)"/></div>
         <div class="fc fcnotes"><input type="text" value="${xe(item.notes)}" placeholder="Notes…"
@@ -1071,8 +1274,8 @@ function renderProd(tier, prod) {
         </select></div>
         <div class="fc"><input type="text" value="${xe(dd.owner)}" placeholder="—"
           data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="owner" onchange="onFC(this)"/></div>
-        <div class="fc"><input type="text" value="${xe(dd.due)}" placeholder="—"
-          data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="due" onchange="onFC(this)"/></div>
+        <div class="fc"><input type="date" value="${xe(dd.due)}"
+          data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="due" onchange="onFC(this);renderMain()"/></div>
         <div class="fc fccmt"><input type="text" value="${xe(dd.comment||'')}" placeholder="Add comment…"
           data-t="${xe(tier)}" data-p="${xe(prod)}" data-i="${item.id}" data-f="comment" onchange="onFC(this)"/></div>
         <div><button class="delbtn"
@@ -1182,9 +1385,9 @@ function sbar(ps) {
     <div class="rw">
       <svg width="60" height="60" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
         <circle cx="32" cy="32" r="${r}" fill="none" stroke="#222" stroke-width="5"/>
-        <circle cx="32" cy="32" r="${r}" fill="none" stroke="#00A3E0" stroke-width="5"
+        <circle cx="32" cy="32" r="${r}" fill="none" stroke="${ps.pct>=100?'#4ade80':'#00A3E0'}" stroke-width="5"
           stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
-          style="transition:stroke-dashoffset .5s"/>
+          style="--ring-full:${c};--ring-target:${off};animation:ringGrow .6s cubic-bezier(.25,.46,.45,.94) both"/>
       </svg>
       <div class="rl"><div class="rpct">${ps.pct}%</div></div>
     </div>
@@ -1251,15 +1454,19 @@ function renameSec(tier,secId,cur) {
 }
 function confirmDelSec(tier,secId,name) {
   if(!guardAdmin()) return;
-  const sec = gsecs(tier).find(s => s.id===secId);
-  const n = sec?.items.length||0;
-  modal('Delete Section',
-    `Delete "${name}"${n?` and its ${n} item${n!==1?'s':''}`:''}? Cannot be undone.`,
-    'Delete','#ef4444',() => {
-      const d = ald(); if (!d) return;
-      d.sections[tier] = d.sections[tier].filter(s => s.id!==secId);
-      save(); render(); toast('Section deleted');
-    });
+  const d = ald(); if (!d) return;
+  const secs = d.sections[tier] || [];
+  const idx = secs.findIndex(s => s.id===secId); if (idx===-1) return;
+  const removed = JSON.parse(JSON.stringify(secs[idx]));
+  secs.splice(idx, 1);
+  save(); render();
+  toast(`Deleted "${name}"`, false, () => {
+    const d2 = ald(); if (!d2) return;
+    if (!d2.sections[tier]) d2.sections[tier] = [];
+    d2.sections[tier].splice(idx, 0, removed);
+    save(); render();
+    toast('Section restored');
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1277,10 +1484,35 @@ function addItem(tier,secId) {
 }
 function confirmDelItem(tier,secId,itemId,name) {
   if(!guardAdmin()) return;
-  modal('Remove Item',`Remove "${name}"? Cannot be undone.`,'Remove','#ef4444',() => {
-    const sec = gsecs(tier).find(s => s.id===secId); if (!sec) return;
-    sec.items = sec.items.filter(i => i.id!==itemId);
-    save(); renderMain(); toast('Item removed');
+  const sec = gsecs(tier).find(s => s.id===secId); if (!sec) return;
+  const idx = sec.items.findIndex(i => i.id===itemId); if (idx===-1) return;
+  const removed = sec.items.splice(idx, 1)[0];
+  // Also snapshot status data for all products in this tier
+  const d = ald(); if (!d) return;
+  const statusBackup = {};
+  for (const prod of (d.products[tier]||[])) {
+    const k = `${tier}||${prod}`;
+    if (d.status[k] && d.status[k][itemId]) {
+      statusBackup[k] = JSON.parse(JSON.stringify(d.status[k][itemId]));
+      delete d.status[k][itemId];
+    }
+  }
+  save(); renderMain();
+  toast(`Removed "${name}"`, false, () => {
+    const sec2 = gsecs(tier).find(s => s.id===secId);
+    if (sec2) {
+      sec2.items.splice(idx, 0, removed);
+      // Restore status data
+      const d2 = ald();
+      if (d2) {
+        for (const [k, v] of Object.entries(statusBackup)) {
+          if (!d2.status[k]) d2.status[k] = {};
+          d2.status[k][itemId] = v;
+        }
+      }
+      save(); renderMain();
+      toast('Item restored');
+    }
   });
 }
 
@@ -1460,13 +1692,24 @@ function scls(s) {
   return st ? st.cls : 'not-started';
 }
 let _tt;
-function toast(msg, isErr) {
+let _undoFn = null;
+function toast(msg, isErr, undoFn) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  const tm = document.getElementById('toast-msg');
+  const tu = document.getElementById('toast-undo');
+  tm.textContent = msg;
   t.className = 'toast' + (isErr?' err':'');
   t.classList.add('show');
+  _undoFn = undoFn || null;
+  tu.style.display = undoFn ? 'inline-block' : 'none';
   clearTimeout(_tt);
-  _tt = setTimeout(() => t.classList.remove('show'), 2200);
+  _tt = setTimeout(() => { t.classList.remove('show'); _undoFn = null; }, undoFn ? 5000 : 2200);
+}
+function doUndo() {
+  if (_undoFn) { _undoFn(); _undoFn = null; }
+  const t = document.getElementById('toast');
+  t.classList.remove('show');
+  clearTimeout(_tt);
 }
 
 // ═══════════════════════════════════════════════════════════════
