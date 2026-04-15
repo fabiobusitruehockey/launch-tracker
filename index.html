@@ -8,7 +8,7 @@
 <style>
 :root{
   --blue:#00A3E0;--black:#000;--b1:#0A0A0A;--b2:#111;--b3:#161616;
-  --border:#222;--hover:#1C1C1C;--g1:#606060;--g2:#909090;--g3:#C0C0C0;--white:#FFF;
+  --border:#222;--hover:#1C1C1C;--g1:#FFFFFF;--g2:#FFFFFF;--g3:#FFFFFF;--white:#FFF;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);min-height:100vh;font-size:14px}
@@ -176,6 +176,26 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);
 .ldtierpct{font-family:'DM Mono',monospace;font-size:10px;color:var(--g2);width:30px;text-align:right;flex-shrink:0}
 .addldbtn{display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:1.5px dashed var(--border);color:var(--g1);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;padding:24px;border-radius:8px;cursor:pointer;transition:all .2s;width:100%}
 .addldbtn:hover{border-color:var(--blue);color:var(--blue)}
+.mthgrid{display:flex;flex-direction:column;gap:16px;padding:24px 28px}
+.mthcard{background:var(--b3);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .2s}
+.mthcard:hover{border-color:rgba(0,163,224,.35)}
+.mthcard.expanded{border-color:rgba(0,163,224,.25)}
+.mthtog{width:100%;background:none;border:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:18px;transition:background .15s}
+.mthtog:hover{background:rgba(255,255,255,.02)}
+.mthicon{width:48px;height:48px;border-radius:10px;background:rgba(0,163,224,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mthicon svg{display:block}
+.mthleft{flex:1;text-align:left;min-width:0}
+.mthname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--white)}
+.mthsub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g1);margin-top:2px}
+.mthright{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.mthpct{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:var(--white)}
+.mthbar{width:100px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.mthbarfill{height:100%;background:var(--blue);transition:width .4s}
+.mthchv{font-size:12px;color:var(--g1);transition:transform .25s;flex-shrink:0}
+.mthcard.expanded .mthchv{transform:rotate(180deg)}
+.mthbody{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.mthcard.expanded .mthbody{display:block}
+.mthbody .hgrid{padding:16px 0 0}
 .mgrwrap{padding:20px 28px}
 .sechdr{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--white);letter-spacing:.08em;text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
 .sechdr::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -696,54 +716,127 @@ function cdHtml(ld) {
 }
 
 function renderHome() {
-  let cards = '';
+  // Group launch days by month
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const groups = {};
+  const noDate = [];
   for (const ld of G.launchDays) {
-    const as = allStats(ld);
-    let tierRows = '';
-    for (const tier of ld.tiers) {
-      const ts = tierStats(tier, ld);
-      tierRows += `<div class="ldtierrow">
-        <div class="ldtiername">${xe(tier)}</div>
-        <div class="ldtierbar"><div class="ldtierfill" style="width:${ts.pct}%"></div></div>
-        <div class="ldtierpct">${ts.pct}%</div>
+    if (!ld.date) { noDate.push(ld); continue; }
+    const dt = new Date(ld.date + 'T00:00:00');
+    const key = dt.getFullYear() + '-' + String(dt.getMonth()).padStart(2,'0');
+    const label = MONTH_NAMES[dt.getMonth()] + ' ' + dt.getFullYear();
+    if (!groups[key]) groups[key] = {label, days:[]};
+    groups[key].days.push(ld);
+  }
+  if (noDate.length) groups['9999-99'] = {label:'No Date Set', days:noDate};
+  const sortedKeys = Object.keys(groups).sort();
+
+  let buckets = '';
+  for (const key of sortedKeys) {
+    const grp = groups[key];
+    // Aggregate stats for the month
+    let mTot=0, mDone=0;
+    for (const ld of grp.days) { const s = allStats(ld); mTot += s.tot; mDone += s.done; }
+    const mPct = mTot ? Math.round(mDone/mTot*100) : 0;
+    const ldCount = grp.days.length;
+
+    // Build inner launch day cards
+    let cards = '';
+    for (const ld of grp.days) {
+      const as = allStats(ld);
+      let tierRows = '';
+      for (const tier of ld.tiers) {
+        const ts = tierStats(tier, ld);
+        tierRows += `<div class="ldtierrow">
+          <div class="ldtiername">${xe(tier)}</div>
+          <div class="ldtierbar"><div class="ldtierfill" style="width:${ts.pct}%"></div></div>
+          <div class="ldtierpct">${ts.pct}%</div>
+        </div>`;
+      }
+      cards += `<div class="ldcard" onclick="switchLd('${ld.id}');goOv()">
+        <div class="ldtop">
+          <div class="ldleft">
+            <div class="ldname">${xe(ld.name)}</div>
+            <div class="lddaterow">
+              <div class="lddate">${ld.date||'No date set'}</div>
+              <button class="ldeditbtn" onclick="event.stopPropagation();editLd('${ld.id}')">✏️</button>
+            </div>
+          </div>
+          <div class="ldcd" onclick="event.stopPropagation();editLd('${ld.id}')">${cdHtml(ld)}</div>
+        </div>
+        <div class="ldringrow">
+          <div class="fring">
+            ${faceoffRing(as.pct)}
+            <div class="fringlbl">
+              <div class="fringpct">${as.pct}%</div>
+              <div class="fringsub">${as.done}/${as.tot}</div>
+            </div>
+          </div>
+          <div class="ldtiers">${tierRows}</div>
+        </div>
       </div>`;
     }
-    cards += `<div class="ldcard" onclick="switchLd('${ld.id}');goOv()">
-      <div class="ldtop">
-        <div class="ldleft">
-          <div class="ldname">${xe(ld.name)}</div>
-          <div class="lddaterow">
-            <div class="lddate">${ld.date||'No date set'}</div>
-            <button class="ldeditbtn" onclick="event.stopPropagation();editLd('${ld.id}')">✏️</button>
-          </div>
+
+    // Calendar icon SVG
+    const calIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00A3E0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      <rect x="7" y="14" width="3" height="3" rx=".5" fill="#00A3E0" stroke="none" opacity=".5"/>
+    </svg>`;
+
+    buckets += `<div class="mthcard" id="mth-${key}">
+      <button class="mthtog" onclick="toggleMonth('${key}')">
+        <div class="mthicon">${calIcon}</div>
+        <div class="mthleft">
+          <div class="mthname">${xe(grp.label)}</div>
+          <div class="mthsub">${ldCount} launch day${ldCount!==1?'s':''} · ${mDone}/${mTot} deliverables</div>
         </div>
-        <div class="ldcd" onclick="event.stopPropagation();editLd('${ld.id}')">${cdHtml(ld)}</div>
-      </div>
-      <div class="ldringrow">
-        <div class="fring">
-          ${faceoffRing(as.pct)}
-          <div class="fringlbl">
-            <div class="fringpct">${as.pct}%</div>
-            <div class="fringsub">${as.done}/${as.tot}</div>
-          </div>
+        <div class="mthright">
+          <div class="mthbar"><div class="mthbarfill" style="width:${mPct}%"></div></div>
+          <div class="mthpct">${mPct}%</div>
+          <div class="mthchv">▼</div>
         </div>
-        <div class="ldtiers">${tierRows}</div>
+      </button>
+      <div class="mthbody">
+        <div class="hgrid">${cards}</div>
       </div>
     </div>`;
   }
-  cards += `<button class="addldbtn" onclick="addLd()">+ New Launch Day</button>`;
+
+  buckets += `<button class="addldbtn" onclick="addLd()">+ New Launch Day</button>`;
+
   return `<div class="hwrap">
     <div class="hhero">
       <div class="hhtitle">TRUE LAUNCH TRACKER</div>
-      <div class="hhsub">Select a launch day below to view its asset checklist</div>
+      <div class="hhsub">Select a month below to view its launch days</div>
     </div>
-    <div class="hgrid">${cards}</div>
+    <div class="mthgrid">${buckets}</div>
   </div>`;
+}
+
+function toggleMonth(key) {
+  const el = document.getElementById('mth-'+key);
+  if (el) el.classList.toggle('expanded');
 }
 
 function initCDs() {
   clearInterval(window._cdt);
   window._cdt = setInterval(() => { if (V.type==='home') renderMain(); }, 60000);
+  // Auto-expand months with upcoming launch days (within 60 days) or current month
+  const now = new Date();
+  const curKey = now.getFullYear() + '-' + String(now.getMonth()).padStart(2,'0');
+  for (const ld of G.launchDays) {
+    if (!ld.date) continue;
+    const dt = new Date(ld.date + 'T00:00:00');
+    const key = dt.getFullYear() + '-' + String(dt.getMonth()).padStart(2,'0');
+    const daysOut = Math.round((dt - now) / 86400000);
+    if (key === curKey || (daysOut >= 0 && daysOut <= 60)) {
+      const el = document.getElementById('mth-'+key);
+      if (el && !el.classList.contains('expanded')) el.classList.add('expanded');
+    }
+  }
+  // If no date set group exists, expand it
+  const noDateEl = document.getElementById('mth-9999-99');
+  if (noDateEl) noDateEl.classList.add('expanded');
 }
 
 // ═══════════════════════════════════════════════════════════════
