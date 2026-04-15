@@ -109,9 +109,9 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;opacity:.03;
 .cact{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;font-size:12px;color:var(--g1);opacity:.4;transition:all .12s}
 .cact:hover{background:rgba(255,255,255,.06);opacity:1;color:var(--white)}
 .cact.del:hover{background:rgba(239,68,68,.12);color:var(--warn)}
-.itbl{background:var(--b2);border:1px solid var(--border);border-top:none}
+.itbl{background:var(--b2);border:1px solid var(--border);border-top:none;overflow-x:auto}
 .catblock.collapsed .itbl{display:none}
-.irow{display:grid;grid-template-columns:36px 1fr 165px 120px 100px 120px 150px 36px;align-items:stretch;border-bottom:1px solid var(--border);transition:background .12s,border-left-color .2s}
+.irow{display:grid;grid-template-columns:36px minmax(180px,1.5fr) minmax(140px,1fr) 120px 100px 120px minmax(150px,1fr) 36px;align-items:stretch;border-bottom:1px solid var(--border);transition:background .12s,border-left-color .2s;min-width:900px}
 .irow:last-child{border-bottom:none}
 .irow:not(.hrow):hover{background:rgba(0,163,224,.03)}
 .irow:not(.hrow):hover .delbtn{opacity:1}
@@ -354,7 +354,7 @@ body.viewer .ss{pointer-events:none}
 body.viewer .sidebar > div:last-child{display:none}
 .vpill{display:none;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--g2);padding:5px 12px;border:1px solid var(--border);border-radius:20px;white-space:nowrap;background:rgba(255,255,255,.02)}
 body.viewer .vpill{display:flex}
-body.viewer .irow{grid-template-columns:1fr 165px 120px 100px 120px 150px 36px}
+body.viewer .irow{grid-template-columns:minmax(180px,1.5fr) minmax(140px,1fr) 120px 100px 120px minmax(150px,1fr) 36px}
 </style>
 </head>
 <body>
@@ -1240,7 +1240,7 @@ function renderProd(tier, prod) {
     }
 
     let rows = `<div class="irow hrow">
-      <div class="icol" style="width:36px;min-width:36px;max-width:36px;padding:7px 4px;justify-content:center">
+      <div class="icol chkcol" style="width:36px;min-width:36px;max-width:36px;padding:7px 4px;justify-content:center">
         <input type="checkbox" style="accent-color:var(--blue);cursor:pointer" onchange="toggleBulkAll('${xe(tier)}','${xe(prod)}',this)"/>
       </div>
       <div class="icol">Asset / Deliverable</div>
