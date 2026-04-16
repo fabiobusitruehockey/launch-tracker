@@ -1114,9 +1114,10 @@ function toggleBulk(tier, prod, itemId, cb) {
   if (cb.checked) _bulkSelected.add(key); else _bulkSelected.delete(key);
   renderBulkBar(tier, prod);
 }
-function toggleBulkAll(tier, prod, cb) {
-  const secs = gsecs(tier);
-  for (const sec of secs) for (const it of sec.items) {
+function toggleBulkAll(tier, prod, secId, cb) {
+  const sec = gsecs(tier).find(s => s.id === secId);
+  if (!sec) return;
+  for (const it of sec.items) {
     const key = `${tier}||${prod}||${it.id}`;
     if (cb.checked) _bulkSelected.add(key); else _bulkSelected.delete(key);
   }
@@ -1241,7 +1242,7 @@ function renderProd(tier, prod) {
 
     let rows = `<div class="irow hrow">
       <div class="icol chkcol" style="width:36px;min-width:36px;max-width:36px;padding:7px 4px;justify-content:center">
-        <input type="checkbox" style="accent-color:var(--blue);cursor:pointer" onchange="toggleBulkAll('${xe(tier)}','${xe(prod)}',this)"/>
+        <input type="checkbox" style="accent-color:var(--blue);cursor:pointer" onchange="toggleBulkAll('${xe(tier)}','${xe(prod)}','${sec.id}',this)"/>
       </div>
       <div class="icol">Asset / Deliverable</div>
       <div class="icol">Notes / Specs</div>
